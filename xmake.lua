@@ -8,7 +8,8 @@ add_requires("libsdl2", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image", "serial
 -- 如需外设通信，可在此添加相应的包，例如：
 -- add_requires("serial")   -- 用于串口通信
 -- add_requires("libusb")   -- 用于USB设备通信
--- compiler command 
+
+
 
 target("sdl2_test_project")
     set_kind("binary")

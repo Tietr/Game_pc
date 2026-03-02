@@ -2,19 +2,19 @@
 #include "drawUtils.h"
 #include <vector>
 
-class Duck
-{
+class Duck {
 public:
   float x, y, scale;
-  float speed;
-  int dir;
-  float anim;
+  float vx, vy; // X轴和Y轴的速度
 
-  Duck(float x, float y, float scale);
+  Duck(Uint32 id, float x, float y, float scale);
   ~Duck() = default;
 
-  void update(float deltaTime);
+  void updateMove(float deltaTime);
   void draw(SDL_Renderer *renderer);
 
   void FlashDuck(SDL_Renderer *renderer);
+
+private:
+  Uint32 ID;
 };

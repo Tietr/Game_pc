@@ -3,11 +3,12 @@
 #include "BaseApp.h"
 #include "Duck.h"
 #include "UI.h"
+#include "SerialHelper.h"
 
 
 class Background;
 const double PI = 3.14159265358979323846;
-class App : public BaseApp {
+class App : public BaseApp, public STM32SerialManager {
 public:
   App(const char *title, int width, int height);
   ~App();
@@ -20,7 +21,5 @@ private:
   Background m_background;
   std::vector<Duck> m_ducks;
   UI m_ui;
-
-  float m_TotalTime = 0;
 
 };

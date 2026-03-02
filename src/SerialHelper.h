@@ -1,15 +1,12 @@
-#ifndef STM32_SERIAL_MANAGER_H
-#define STM32_SERIAL_MANAGER_H
+#pragma once
 
 #include <atomic>
 #include <memory>
 #include <mutex>
-#include <queue>
 #include <serial/serial.h>
 #include <string>
 #include <thread>
 #include <vector>
-
 
 class STM32SerialManager {
 public:
@@ -67,4 +64,3 @@ private:
   std::vector<std::string> _dataBuffer;
 };
 
-#endif
