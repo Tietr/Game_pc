@@ -1,5 +1,8 @@
 #pragma once
-#include <SDL2/SDL.h>
+#ifndef __PRFCHWINTRIN_H
+#define __PRFCHWINTRIN_H
+#endif
+#include <SDL.h>
 #include <iostream>
 
 class BaseApp {

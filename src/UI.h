@@ -13,7 +13,6 @@ public:
 
   void addScore();
   
-
   void reset();
 
   void draw(SDL_Renderer *renderer);

@@ -1,20 +1,24 @@
 #pragma once
-#include "drawUtils.h"
-#include <vector>
+
+#ifndef __PRFCHWINTRIN_H
+#define __PRFCHWINTRIN_H
+#endif
+#include "SDL_render.h"
+
 
 class Duck {
 public:
   float x, y, scale;
   float vx, vy; // X轴和Y轴的速度
 
-  Duck(Uint32 id, float x, float y, float scale);
+  Duck(uint32_t id, float x, float y, float scale);
   ~Duck() = default;
 
-  void updateMove(float deltaTime);
+  void updateMove(const float deltaTime);
   void draw(SDL_Renderer *renderer);
 
-  void FlashDuck(SDL_Renderer *renderer);
+  void FlashDuck(SDL_Renderer *renderer, const float delayTime);
 
 private:
-  Uint32 ID;
+  uint32_t ID;
 };

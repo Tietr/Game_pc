@@ -1,5 +1,10 @@
 #pragma once
-#include "DrawUtils.h"
+
+#ifndef __PRFCHWINTRIN_H
+#define __PRFCHWINTRIN_H
+#endif
+#include "SDL_render.h"
+
 #include <vector>
 
 class Background {

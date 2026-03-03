@@ -1,72 +1,81 @@
 #include "SerialHelper.h"
-#include <chrono>
-
-
 
 STM32SerialManager::STM32SerialManager(std::string vid, std::string pid,
                                        uint32_t baudrate)
-    : _baudrate(baudrate), _targetVid(vid), _targetPid(pid) {}
+    : m_baudrate(baudrate), m_targetVid(vid), m_targetPid(pid) {}
 
 STM32SerialManager::~STM32SerialManager() { stop(); }
 
 void STM32SerialManager::start() {
-  if (_keepRunning)
+  if (m_keepRunning)
     return;
-  _keepRunning = true;
-  _workerThread = std::thread(&STM32SerialManager::threadWorker, this);
+  m_keepRunning = true;
+  m_workerThread = std::thread(&STM32SerialManager::threadWorker, this);
 }
 
 void STM32SerialManager::stop() {
-  _keepRunning = false;
-  if (_workerThread.joinable()) {
-    _workerThread.join();
+  m_keepRunning = false;
+  if (m_workerThread.joinable()) {
+    m_workerThread.join();
   }
   closeConnection();
 }
 
 void STM32SerialManager::threadWorker() {
-  while (_keepRunning) {
-    if (!_serial || !_serial->isOpen()) {
-      _connected = false;
+  while (m_keepRunning) {
+    if (!m_serial || !m_serial->isOpen()) {
+      m_connected = false;
       if (!tryConnect()) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         continue;
       }
-      _connected = true;
+      m_connected = true;
     }
 
     try {
-      if (_serial->available()) {
-        std::string line = _serial->readline();
+      if (m_serial->available()) {
+        std::string line = m_serial->readline();
         if (!line.empty()) {
           // 将数据存入缓冲区
-          std::lock_guard<std::mutex> lock(_dataMutex);
-          _dataBuffer.push_back(line);
+          std::lock_guard<std::mutex> lock(m_dataMutex);
+          m_dataBuffer.push_back(line);
         }
       }
     } catch (const std::exception &e) {
-      _connected = false;
+      m_connected = false;
       closeConnection();
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
 }
 
-std::vector<std::string> STM32SerialManager::fetchNewData() {
-  std::lock_guard<std::mutex> lock(_dataMutex);
-  std::vector<std::string> temp;
-  temp.swap(_dataBuffer); // 快速交换，清空原缓冲区并返回数据
-  return temp;
+// std::string STM32SerialManager::fetchNewData() {
+//   std::lock_guard<std::mutex> lock(m_dataMutex);
+//   std::vector<std::string> temp;
+//   temp.swap(m_dataBuffer);
+//   return temp.at(0);
+// }
+
+std::optional<std::string> STM32SerialManager::fetchNewData() {
+  std::lock_guard<std::mutex> lock(m_dataMutex);
+
+  if (m_dataBuffer.empty()) {
+    return std::nullopt; // 或者返回空字符串 ""，但 optional 语义更清晰
+  }
+  std::string data = std::move(m_dataBuffer.front());
+  m_dataBuffer.pop_front(); // deque 的 pop_front 非常快
+  return data;
 }
+
 
 bool STM32SerialManager::tryConnect() {
   auto devices = serial::list_ports();
   for (const auto &device : devices) {
     if (isMySTM32(device)) {
       try {
-        _serial = std::make_unique<serial::Serial>(
-            device.port, _baudrate, serial::Timeout::simpleTimeout(1000));
-        return _serial->isOpen();
+        m_serial = std::make_unique<serial::Serial>(
+            device.port, m_baudrate, serial::Timeout::simpleTimeout(1000));
+        return m_serial->isOpen();
       } catch (...) {
         return false;
       }
@@ -76,16 +85,16 @@ bool STM32SerialManager::tryConnect() {
 }
 
 void STM32SerialManager::closeConnection() {
-  if (_serial) {
-    if (_serial->isOpen())
-      _serial->close();
-    _serial.reset();
+  if (m_serial) {
+    if (m_serial->isOpen())
+      m_serial->close();
+    m_serial.reset();
   }
 }
 
 bool STM32SerialManager::isMySTM32(const serial::PortInfo &info) {
-  return (info.hardware_id.find("VID_" + _targetVid) != std::string::npos) &&
-         (info.hardware_id.find("PID_" + _targetPid) != std::string::npos);
+  return (info.hardware_id.find("VID_" + m_targetVid) != std::string::npos) &&
+         (info.hardware_id.find("PID_" + m_targetPid) != std::string::npos);
 }
 
 /*

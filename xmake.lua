@@ -3,7 +3,7 @@ set_languages("c++17")
 
 -- 声明依赖项：SDL2 及其核心扩展库
 
-add_requires("libsdl2", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image", "serial")
+add_requires("libsdl2 >=2.30.0", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image", "serial")
 
 -- 如需外设通信，可在此添加相应的包，例如：
 -- add_requires("serial")   -- 用于串口通信
@@ -15,6 +15,8 @@ target("sdl2_test_project")
     set_kind("binary")
     add_files("src/*.cpp")
     add_packages("libsdl2", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image","serial")
+    
+
 
     -- 如需外设通信，在此链接相应的包，例如：
     -- add_packages("serial")

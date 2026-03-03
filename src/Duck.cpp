@@ -1,5 +1,5 @@
 #include "Duck.h"
-#include <cmath>
+#include "DrawUtils.h"
 #include <cstdlib>
 
 Duck::Duck(Uint32 id, float x, float y, float s) : x(x), y(y), scale(s) {
@@ -13,7 +13,7 @@ Duck::Duck(Uint32 id, float x, float y, float s) : x(x), y(y), scale(s) {
   vy = baseSpeedY * ((rand() % 2 == 0) ? 1 : -1);
 }
 
-void Duck::updateMove(float deltaTime) {
+void Duck::updateMove(const float deltaTime) {
   // 这里的 deltaTime 建议乘上去，保证不同帧率速度一致
   // 如果没有全局计时器，暂且直接加 vx, vy
   x += vx * deltaTime;
@@ -75,12 +75,18 @@ void Duck::draw(SDL_Renderer *renderer) {
                         headY - 3 * scale, 2 * scale, {0, 0, 0, 255});
 }
 
-void Duck::FlashDuck(SDL_Renderer *renderer) {
+void Duck::FlashDuck(SDL_Renderer *renderer, const float delayTime) {
   // 简单的闪烁矩形反馈
-  SDL_Rect rect = {static_cast<int>(x - 20 * scale),
-                   static_cast<int>(y - 20 * scale), (int)(40 * scale),
-                   (int)(40 * scale)};
+  const int length = 70 * scale;
+  SDL_Rect rect = {static_cast<int>(x - 35 * scale),
+                   static_cast<int>(y - 35 * scale), (int)(length),
+                   (int)(length)};
+
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_RenderFillRect(renderer, &rect);
+  SDL_RenderPresent(renderer);
+  SDL_Delay(delayTime);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderFillRect(renderer, &rect);
   SDL_RenderPresent(renderer);
 }
