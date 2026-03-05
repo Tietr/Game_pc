@@ -2,14 +2,19 @@
 #include "Background.h"
 #include "BaseApp.h"
 #include "Duck.h"
+#include "SerialManager.h"
 #include "UI.h"
-#include "SerialHelper.h"
 #include <array>
-
-
 
 class Background;
 const double PI = 3.14159265358979323846;
+
+// 游戏状态枚举
+enum class GameState {
+  Running, // 正常运行
+  Flashing // 闪烁反馈中
+};
+
 class App : public BaseApp {
 public:
   App(const char *title, int width, int height);
@@ -20,25 +25,30 @@ public:
   virtual void onEvent(const SDL_Event &event) override;
 
 private:
-  STM32SerialManager m_serialManager;
+  SerialManager m_serialManager;
   Background m_background;
   std::vector<Duck> m_ducks;
   UI m_ui;
+
+  // 闪烁相关状态
+  GameState m_gameState = GameState::Running;
+  float m_flashTimer = 0.0f;                    // 闪烁剩余时间
+  static constexpr float FLASH_DURATION = 1.0f; // 闪烁持续1秒
   // 存储 USB 口接收的数据
   struct Data {
-    bool IsDown = false;  // true 表示 Down，false 表示 Up
+    bool IsDown = false; // true 表示 Down，false 表示 Up
     uint32_t Value = 0;
     uint32_t Percent = 0;
   };
   // 这个属于游戏的数据，如果满了，则全部丢弃
   std::array<std::optional<Data>, 100> m_dataBuffer;
-  
+
   void analyzeUSBData() {
     auto TempData = m_serialManager.fetchNewData();
     if (TempData) {
       const std::string data = TempData.value();
-      
-      //data :Down, Value: 428, Percent:89%
+
+      // data :Down, Value: 428, Percent:89%
       Data newData;
       if (data.find("Down") != std::string::npos) {
         newData.IsDown = true;
@@ -51,7 +61,9 @@ private:
         size_t valueEnd = data.find(",", valueStart);
         if (valueEnd != std::string::npos) {
           std::string valueStr = data.substr(valueStart, valueEnd - valueStart);
-          valueStr.erase(std::remove_if(valueStr.begin(), valueStr.end(), ::isspace), valueStr.end());
+          valueStr.erase(
+              std::remove_if(valueStr.begin(), valueStr.end(), ::isspace),
+              valueStr.end());
           newData.Value = std::stoi(valueStr);
         }
       }
@@ -60,8 +72,11 @@ private:
         size_t percentStart = percentPos + 8;
         size_t percentEnd = data.find("%", percentStart);
         if (percentEnd != std::string::npos) {
-          std::string percentStr = data.substr(percentStart, percentEnd - percentStart);
-          percentStr.erase(std::remove_if(percentStr.begin(), percentStr.end(), ::isspace), percentStr.end());
+          std::string percentStr =
+              data.substr(percentStart, percentEnd - percentStart);
+          percentStr.erase(
+              std::remove_if(percentStr.begin(), percentStr.end(), ::isspace),
+              percentStr.end());
           newData.Percent = std::stoi(percentStr);
         }
       }
@@ -71,7 +86,7 @@ private:
         index++;
       }
       if (index < m_dataBuffer.size()) {
-        m_dataBuffer[index] = newData;  // std::optional 自动包装
+        m_dataBuffer[index] = newData;
       }
     }
   }

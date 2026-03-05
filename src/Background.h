@@ -3,7 +3,8 @@
 #ifndef __PRFCHWINTRIN_H
 #define __PRFCHWINTRIN_H
 #endif
-#include "SDL_render.h"
+
+#include <SDL2/SDL_render.h>
 
 #include <vector>
 
@@ -23,11 +24,12 @@ private:
 public:
   Background();
   ~Background() = default;
-  void update(float deltaTime);
+  void Update(float deltaTime);
   void Draw(SDL_Renderer *renderer);
   // 画面黑屏闪烁
-  void flashScreen(SDL_Renderer *renderer);
-  void enableFlash();
-  bool isFlash();
-  void disableFlash();
+  // TODO: 优化调用结构
+  void FlashScreen(SDL_Renderer *renderer);
+  void EnableFlash();
+  bool IsFlash();
+  void DisableFlash();
 };

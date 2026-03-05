@@ -15,6 +15,7 @@ void UI::draw(SDL_Renderer *renderer) {
   // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
   // 2. 绘制底部信息栏
+  
   SDL_SetRenderDrawColor(renderer, panelColor.r, panelColor.g, panelColor.b,
                          panelColor.a);
 

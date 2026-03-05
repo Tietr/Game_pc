@@ -75,19 +75,12 @@ void Duck::draw(SDL_Renderer *renderer) {
                         headY - 3 * scale, 2 * scale, {0, 0, 0, 255});
 }
 
-void Duck::FlashDuck(SDL_Renderer *renderer, const float delayTime) {
-  // 简单的闪烁矩形反馈
-  const int length = 70 * scale;
+void Duck::drawFlash(SDL_Renderer *renderer) {
+  // 闪烁时绘制白色高亮矩形
+  const int length = 70 * static_cast<int>(scale);
   SDL_Rect rect = {static_cast<int>(x - 35 * scale),
-                   static_cast<int>(y - 35 * scale), (int)(length),
-                   (int)(length)};
+                   static_cast<int>(y - 35 * scale), length, length};
 
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderFillRect(renderer, &rect);
-  SDL_RenderPresent(renderer);
-  SDL_Delay(delayTime);
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-  SDL_RenderFillRect(renderer, &rect);
-  SDL_RenderPresent(renderer);
 }
-

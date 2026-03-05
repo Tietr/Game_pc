@@ -9,15 +9,13 @@
 #include <string>
 #include <thread>
 
-class STM32SerialManager {
+class SerialManager {
 public:
-  STM32SerialManager(std::string vid = "0483", std::string pid = "5740",
-                     uint32_t baudrate = 115200);
-  ~STM32SerialManager();
-
-  // 防止拷贝
-  STM32SerialManager(const STM32SerialManager &) = delete;
-  STM32SerialManager &operator=(const STM32SerialManager &) = delete;
+  SerialManager(std::string vid = "0483", std::string pid = "5740",
+                uint32_t baudrate = 115200);
+  ~SerialManager();
+  SerialManager(const SerialManager &) = delete;
+  SerialManager &operator=(const SerialManager &) = delete;
 
   // --- 游戏逻辑接口 ---
 

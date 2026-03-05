@@ -5,7 +5,6 @@
 #endif
 #include "SDL_render.h"
 
-
 class Duck {
 public:
   float x, y, scale;
@@ -16,8 +15,7 @@ public:
 
   void updateMove(const float deltaTime);
   void draw(SDL_Renderer *renderer);
-
-  void FlashDuck(SDL_Renderer *renderer, const float delayTime);
+  void drawFlash(SDL_Renderer *renderer); // 闪烁时的高亮绘制
 
 private:
   uint32_t ID;

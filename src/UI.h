@@ -1,11 +1,12 @@
 #pragma once
-#include <SDL_ttf.h>
+
 #include "DrawUtils.h"
+#include <SDL_ttf.h>
 class UI {
 private:
   int score;
   int maxScore;
-  SDL_Color panelColor;
+  SDL_Color panelColor = {0xFF, 0xFF, 0xFF, 0xFF};
 
 public:
   UI();
