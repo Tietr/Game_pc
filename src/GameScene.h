@@ -2,9 +2,8 @@
 #include "Background.h"
 #include "BaseScene.h"
 #include "Duck.h"
-#include "SerialManager.h"
 #include "UI.h"
-#include <iostream>
+#include <memory>
 #include <vector>
 
 
@@ -19,7 +18,7 @@ public:
   void HandleInput(const SDL_Event &event) override;
   void OnEnter() override;
   void OnExit() override;
-  void Render(SDL_Renderer *render) override;
+  void Render(SDL_Renderer *render, TTF_Font *font) override;
   void Update(float deltaTime) override;
 
 private:

@@ -23,12 +23,12 @@ void SceneManager::Update(float deltaTime) {
     ChangeScene(currentScene->GetNextSceneName());
   }
 }
-void SceneManager::Render(SDL_Renderer *render) {
+void SceneManager::Render(SDL_Renderer *render, TTF_Font *font) {
   auto currentScene = m_currentScene.lock();
   if (!currentScene) {
     return;
   }
-  currentScene->Render(render);
+  currentScene->Render(render,font);
 }
 bool SceneManager::ChangeScene(const std::string &name) {
   auto newScene = m_scenes.find(name);

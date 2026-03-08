@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "Background.h"
 #include "Duck.h"
+#include <iostream>
 
 void GameScene::Update(float deltaTime) {
   // 检测游戏状态
@@ -12,7 +13,7 @@ void GameScene::Update(float deltaTime) {
     duck->updateMove(deltaTime);
   }
 }
-void GameScene::Render(SDL_Renderer *render) {
+void GameScene::Render(SDL_Renderer *render,TTF_Font* font) {
   m_background->Draw(render);
   for (auto &duck : m_ducks) {
     duck->draw(render);

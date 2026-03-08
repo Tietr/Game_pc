@@ -6,9 +6,6 @@
 #include "UI.h"
 #include <array>
 #include "SceneManager.h"
-
-const double PI = 3.14159265358979323846;
-
 // 游戏状态枚举
 enum class GameState {
   Running, // 正常运行
@@ -21,7 +18,7 @@ public:
   ~App();
   virtual void onInit() override;
   virtual void onUpdate(float deltaTime) override;
-  virtual void onRender(SDL_Renderer *renderer) override;
+  virtual void onRender(SDL_Renderer *renderer, TTF_Font *font) override;
   virtual void onEvent(const SDL_Event &event) override;
 
 private:

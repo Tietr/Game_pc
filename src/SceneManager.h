@@ -1,6 +1,5 @@
 #pragma once
 #include "BaseScene.h"
-#include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -20,7 +19,7 @@ public:
 
   void RegisterScene(const std::string &name, std::shared_ptr<BaseScene> scene);
   void Update(float deltaTime);
-  void Render(SDL_Renderer *render);
+  void Render(SDL_Renderer *render, TTF_Font *font);
   bool ChangeScene(const std::string &name);
   std::string GetCurrentSceneName() const;
   void HandleInput(const SDL_Event &event);

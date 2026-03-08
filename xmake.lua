@@ -7,6 +7,8 @@ add_requires("libsdl2 >=2.30.0", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image"
 -- 设置默认构建模式为debug
 set_defaultmode("debug")
 
+
+
 target("sdl2_test_project")
     set_kind("binary")
     add_files("src/*.cpp")
@@ -36,3 +38,16 @@ target("sdl2_test_project")
             add_ldflags("/DEBUG")  -- 链接调试信息
         end
     end
+    after_build(function (target)
+        cpResToDir = target:targetdir() .. "/res"
+        -- 确保目标目录存在
+        os.mkdir(cpResToDir)
+        -- 复制res目录下的所有文件
+        local files = os.files("res/*")
+        for _, file in ipairs(files) do
+            os.cp(file, cpResToDir)
+        end
+        msg = "Building finished, cp res files to " .. cpResToDir
+        print(msg)
+    end )
+

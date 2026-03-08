@@ -3,7 +3,7 @@
 #include "MainMenuScene.h"
 
 App::App(const char *title, int width, int height)
-    : BaseApp(title, width, height), m_background(), m_ui(), m_serialManager() {
+    : BaseApp(title, width, height), m_background(), m_ui() {
 
   m_sceneManager = std::make_unique<SceneManager>();
   m_serialManager = std::make_unique<SerialManager>();
@@ -49,7 +49,7 @@ void App::onInit() {
 }
 
 // 渲染逻辑
-void App::onRender(SDL_Renderer *renderer) {
+void App::onRender(SDL_Renderer *renderer, TTF_Font *font) {
   // // 正常渲染游戏画面
   // m_background.Draw(renderer);
   // for (auto &duck : m_ducks) {
@@ -69,7 +69,7 @@ void App::onRender(SDL_Renderer *renderer) {
   //   }
   // }
 
-  m_sceneManager->Render(renderer);
+  m_sceneManager->Render(renderer, font);
   SDL_RenderPresent(renderer);
 }
 

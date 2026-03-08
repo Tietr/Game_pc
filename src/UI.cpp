@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "DrawUtils.h"
 
 UI::UI() : score(0), maxScore(10) {}
 
@@ -7,15 +8,13 @@ void UI::addScore() {
     score++;
 }
 
-void UI::reset() {
-  score = 0;
-}
+void UI::reset() { score = 0; }
 void UI::draw(SDL_Renderer *renderer) {
   // 1. 开启 Alpha 混合模式以支持半透明
   // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
   // 2. 绘制底部信息栏
-  
+
   SDL_SetRenderDrawColor(renderer, panelColor.r, panelColor.g, panelColor.b,
                          panelColor.a);
 
