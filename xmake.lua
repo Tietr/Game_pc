@@ -2,26 +2,37 @@ add_rules("mode.debug", "mode.release")
 set_languages("c++17")
 
 -- 声明依赖项：SDL2 及其核心扩展库
-
 add_requires("libsdl2 >=2.30.0", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image", "serial")
 
--- 如需外设通信，可在此添加相应的包，例如：
--- add_requires("serial")   -- 用于串口通信
--- add_requires("libusb")   -- 用于USB设备通信
-
-
+-- 设置默认构建模式为debug
+set_defaultmode("debug")
 
 target("sdl2_test_project")
     set_kind("binary")
     add_files("src/*.cpp")
     add_packages("libsdl2", "libsdl2_ttf", "libsdl2_mixer", "libsdl2_image","serial")
     
-
-
-    -- 如需外设通信，在此链接相应的包，例如：
-    -- add_packages("serial")
-    -- add_packages("libusb")
+    -- Debug模式配置
+    on_load(function (target)
+        if is_mode("debug") then
+            target:set("symbols", "debug")
+            target:set("optimize", "none")
+            target:set("warnings", "all")
+            target:add("defines", "DEBUG")
+            print("Building in DEBUG mode")
+        elseif is_mode("release") then
+            target:set("symbols", "hidden")
+            target:set("optimize", "fastest")
+            target:add("defines", "NDEBUG")
+            print("Building in RELEASE mode")
+        end
+    end)
 
     if is_os("windows") then
         add_ldflags("/SUBSYSTEM:CONSOLE")
+        -- Debug模式添加调试信息
+        if is_mode("debug") then
+            add_cxflags("/Zi")  -- 生成调试信息
+            add_ldflags("/DEBUG")  -- 链接调试信息
+        end
     end

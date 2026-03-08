@@ -2,11 +2,11 @@
 #include "Background.h"
 #include "Duck.h"
 
-
 void GameScene::Update(float deltaTime) {
   // 检测游戏状态
   // 分析数据
   // 更新背景、鸭子、UI 等信息
+
   m_background->Update(deltaTime);
   for (auto &duck : m_ducks) {
     duck->updateMove(deltaTime);
@@ -23,13 +23,18 @@ void GameScene::Render(SDL_Renderer *render) {
 void GameScene::OnExit() {
   std::cout << "Exiting GameScene" << std::endl;
   m_gameState = GameState::None;
+}
+void GameScene::OnEnter() {
+  // m_nextSceneName = m_name;
+  BaseScene::OnEnter();
+  std::cout << "Entering GameScene" << std::endl;
+  
   }
-void GameScene::OnEnter() { std::cout << "Entering GameScene" << std::endl; }
 void GameScene::HandleInput(const SDL_Event &event) {
   switch (event.type) {
   case SDL_KEYDOWN:
-    if (event.key.keysym.sym == SDLK_ESCAPE) {
-      m_nextSceneName = "MainMenu";
+    if (event.key.keysym.sym == SDLK_q) {
+      m_nextSceneName = "mainMenu";
     }
     if (event.key.keysym.sym == SDLK_SPACE) {
       m_gameState = GameState::Flashing;
@@ -40,7 +45,7 @@ void GameScene::HandleInput(const SDL_Event &event) {
     std::cout << "Clicked" << std::endl;
   }
 }
-void GameScene::OnInit(const std::string_view &name) {
+void GameScene::OnInit(const std::string &name) {
   m_name = name;
   m_nextSceneName = name;
   m_background = std::make_unique<Background>();

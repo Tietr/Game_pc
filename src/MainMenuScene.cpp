@@ -1,9 +1,6 @@
 #include "MainMenuScene.h"
 
-void MainMenuScene::OnInit(const std::string_view &name) {
-  m_name = name;
-  m_nextSceneName = name;
-}
+void MainMenuScene::OnInit(const std::string &name) { BaseScene::OnInit(name); }
 void MainMenuScene::HandleInput(const SDL_Event &event) {
   switch (event.type) {
   case SDL_QUIT:
@@ -23,6 +20,7 @@ void MainMenuScene::HandleInput(const SDL_Event &event) {
   }
 }
 void MainMenuScene::OnEnter() {
+  BaseScene::OnEnter();
   std::cout << "Entering " << m_name << std::endl;
 }
 void MainMenuScene::OnExit() { std::cout << "Exiting " << m_name << std::endl; }

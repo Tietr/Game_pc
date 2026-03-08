@@ -12,6 +12,12 @@ public:
       : m_title(title), m_width(width), m_height(height), FPS_LIMIT(60.0f),
         FPS_TIME(1.0f / FPS_LIMIT) {}
   virtual ~BaseApp() { cleanup(); }
+
+  static void QuitGame() {
+    SDL_Event event;
+    event.type = SDL_QUIT;
+    SDL_PushEvent(&event);
+  }
   int run() {
     if (!init()) {
       std::cerr << "初始化失败" << std::endl;

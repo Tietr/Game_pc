@@ -1,50 +1,68 @@
 #include "SceneManager.h"
+#include "BaseApp.h"
+
 void SceneManager::RegisterScene(const std::string &name,
-                                 std::unique_ptr<BaseScene> scene) {
-  m_scenes[name] = std::move(scene);
-}
-void SceneManager::Update(float deltaTime) {
-  if (m_currentScene == nullptr) {
+                                 std::shared_ptr<BaseScene> scene) {
+  if (m_scenes.find(name) != m_scenes.end()) {
+    std::cout << "Scene " << name << " already exists" << std::endl;
     return;
   }
-  m_currentScene->Update(deltaTime);
-  if (m_currentScene->GetName() != m_currentScene->GetNextSceneName()) {
-    ChangeScene(m_currentScene->GetNextSceneName());
+  scene->OnInit(name);
+  m_scenes[name] = scene;
+}
+void SceneManager::Update(float deltaTime) {
+  auto currentScene = m_currentScene.lock();
+  if (!currentScene) {
+    return;
+  }
+  currentScene->Update(deltaTime);
+  if (currentScene->GetNextSceneName() == "quit") {
+    BaseApp::QuitGame();
+  }
+  if (currentScene->GetName() != currentScene->GetNextSceneName()) {
+    ChangeScene(currentScene->GetNextSceneName());
   }
 }
 void SceneManager::Render(SDL_Renderer *render) {
-  if (m_currentScene == nullptr) {
+  auto currentScene = m_currentScene.lock();
+  if (!currentScene) {
     return;
   }
-  m_currentScene->Render(render);
+  currentScene->Render(render);
 }
-bool SceneManager::ChangeScene(const std::string_view name) {
-  if (m_currentScene != nullptr ) {
-    m_currentScene->OnExit();
-  }
+bool SceneManager::ChangeScene(const std::string &name) {
   auto newScene = m_scenes.find(name);
   if (newScene == m_scenes.end()) {
     std::cout << "Scene " << name << " not found" << std::endl;
     return false;
   }
-  m_currentScene = newScene->second.get();
-  m_currentScene->OnEnter();
+  std::shared_ptr<BaseScene> currentScene = m_currentScene.lock();
+  if (currentScene && name == currentScene->GetName()) {
+    return true;
+  }
+  if (currentScene) {
+    currentScene->OnExit();
+  }
+  m_currentScene = newScene->second;
+  newScene->second->OnEnter();
   return true;
 }
-std::string_view SceneManager::GetCurrentSceneName() const {
-  if (m_currentScene == nullptr) {
+std::string SceneManager::GetCurrentSceneName() const {
+  auto currentScene = m_currentScene.lock();
+  if (!currentScene) {
     return "";
   }
-  return m_currentScene->GetName();
+  return currentScene->GetName();
 }
 void SceneManager::HandleInput(const SDL_Event &event) {
-  if (m_currentScene == nullptr) {
+  auto currentScene = m_currentScene.lock();
+  if (!currentScene) {
     return;
   }
-  m_currentScene->HandleInput(event);
+  currentScene->HandleInput(event);
 }
-const std::vector<std::string_view> SceneManager::GetAllSceneNames() {
-  std::vector<std::string_view> names;
+std::vector<std::string> SceneManager::GetAllSceneNames() {
+  std::vector<std::string> names;
   for (auto &scene : m_scenes) {
     names.push_back(scene.first);
   }

@@ -1,0 +1,73 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "xmake: debug build",
+      "type": "shell",
+      "command": "xmake",
+      "args": [
+        "config",
+        "-m",
+        "debug"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "配置并构建debug版本"
+    },
+    {
+      "label": "xmake: release build",
+      "type": "shell",
+      "command": "xmake",
+      "args": [
+        "config",
+        "-m",
+        "release"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "配置并构建release版本"
+    },
+    {
+      "label": "xmake: clean",
+      "type": "shell",
+      "command": "xmake",
+      "args": [
+        "clean"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "清理构建文件"
+    },
+    {
+      "label": "xmake: rebuild debug",
+      "type": "shell",
+      "command": "xmake",
+      "args": [
+        "config",
+        "-c",
+        "-m",
+        "debug"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "清理并重新构建debug版本"
+    },
+    {
+      "label": "xmake: rebuild release",
+      "type": "shell",
+      "command": "xmake",
+      "args": [
+        "config",
+        "-c",
+        "-m",
+        "release"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "清理并重新构建release版本"
+    }
+  ]
+}
