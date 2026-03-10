@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseScene.h"
-#include "UI.h"
+#include "SceneUIManager.h"
 #include <memory>
 
 class MainMenuScene : public BaseScene {

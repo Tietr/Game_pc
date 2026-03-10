@@ -2,7 +2,7 @@
 #include "Background.h"
 #include "BaseScene.h"
 #include "Duck.h"
-#include "UI.h"
+// #include "UI.h"
 #include <memory>
 #include <vector>
 class GameScene : public BaseScene {
