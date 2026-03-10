@@ -8,12 +8,8 @@ class SceneManager {
 public:
   SceneManager() = default;
   ~SceneManager() = default;
-
-  // 禁止拷贝
   SceneManager(const SceneManager &) = delete;
   SceneManager &operator=(const SceneManager &) = delete;
-
-  // 允许移动
   SceneManager(SceneManager &&) = default;
   SceneManager &operator=(SceneManager &&) = default;
 

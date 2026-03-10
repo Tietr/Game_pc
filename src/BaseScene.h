@@ -6,7 +6,6 @@
 #include "SDL_ttf.h"
 #include <SDL.h>
 
-
 class BaseScene {
 public:
   ~BaseScene() = default;
@@ -16,7 +15,9 @@ public:
   };
   virtual void OnEnter() { m_nextSceneName = m_name; };
   virtual void OnExit() = 0;
-  virtual void Update(float deltaTime) = 0;
+  virtual void Update(float deltaTime) {
+    
+  };
   virtual void Render(SDL_Renderer *render, TTF_Font *font) = 0;
   virtual void HandleInput(const SDL_Event &event) = 0;
   inline virtual std::string GetName() const { return m_name; }
@@ -42,5 +43,11 @@ protected:
       SDL_DestroyTexture(textTexture);
     }
     SDL_FreeSurface(textSurface);
-                  }
+  }
+  enum GameState { Flashing, Running };
+  GameState m_gameState = Running;
+  // void FlashingPos(SDL_Renderer *renderer, SDL_Rect rect) {
+  // }
+
+
 };

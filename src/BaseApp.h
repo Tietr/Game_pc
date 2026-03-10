@@ -2,19 +2,20 @@
 #ifndef __PRFCHWINTRIN_H
 #define __PRFCHWINTRIN_H
 #endif
-#include <SDL.h>
 #include "SDL_ttf.h"
+#include <SDL.h>
 #include <iostream>
+
 
 class BaseApp {
 public:
   BaseApp(const char *title, int width, int height, float fps_Limit = 60.0f,
           float fps_time = 1.0f,
           const std::string &fontPath = "./res/MAPLEMONONORMALNL-NF-BOLD.TTF",
-          int fontSize = 12)
+          int fontSize = 50)
       : m_title(title), FPS_LIMIT(60.0f), FPS_TIME(1.0f / FPS_LIMIT),
-        m_FontPath(fontPath), m_FontSize(fontSize),
-        m_width(width), m_height(height) {}
+        m_FontPath(fontPath), m_FontSize(fontSize), m_width(width),
+        m_height(height) {}
   virtual ~BaseApp() { cleanup(); }
 
   static void QuitGame() {
@@ -39,22 +40,23 @@ public:
       float dt = (currentTime - m_lastTime) / (float)frequency;
       m_lastTime = currentTime;
       if (dt > 0.25f) {
-        dt = 0.25f; 
+        dt = 0.25f;
       }
       while (SDL_PollEvent(&event)) {
         handleEvents(event);
         onEvent(event);
       }
-      
+
       accumulator += dt * TimeScale;
       while (accumulator >= FPS_TIME) {
         onUpdate(FPS_TIME);
         accumulator -= FPS_TIME;
+        GameTime += FPS_TIME;
       }
 
       SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
       SDL_RenderClear(m_renderer);
-      onRender(m_renderer,m_font);
+      onRender(m_renderer, m_font);
       SDL_RenderPresent(m_renderer);
     }
     return 0;
@@ -70,9 +72,10 @@ private:
   const float FPS_TIME;
   std::string m_FontPath;
   int m_FontSize;
+  double GameTime = 0.0f;
 
 protected:
-  // 子类可以重写这些钩子函数
+  // 子类钩子函数
   virtual void onInit() {}
   virtual void onUpdate(float deltaTime) {}
   virtual void onRender(SDL_Renderer *renderer, TTF_Font *font) {}
@@ -82,8 +85,9 @@ protected:
   TTF_Font *getFont() { return m_font; }
 
   int m_width, m_height;
-  float TimeScale = 1.0f;
 
+  float TimeScale = 1.0f;
+  double GetGameTime() { return GameTime; }
   bool init() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       std::cerr << "SDL_Init 失败: " << SDL_GetError() << std::endl;
@@ -113,7 +117,6 @@ protected:
     if (m_font == nullptr) {
       std::cerr << "TTF_OpenFont 错误: " << TTF_GetError() << std::endl;
     }
-
 
     onInit();
     return true;

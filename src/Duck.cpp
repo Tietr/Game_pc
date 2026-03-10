@@ -1,3 +1,5 @@
+
+
 #include "Duck.h"
 #include "DrawUtils.h"
 #include <cstdlib>
@@ -49,8 +51,8 @@ void Duck::draw(SDL_Renderer *renderer) {
   // 根据 vx 的正负决定头朝向
   int faceDir = (vx > 0) ? 1 : -1;
 
-  int headX = x + (18 * scale * faceDir);
-  int headY = curY - 15 * scale;
+  int headX = static_cast<int>(x + (18 * scale * faceDir));
+  int headY = static_cast<int>(curY - 15 * scale);
 
   // 1. 绘制碰撞区域/背景 (可选)
   // SDL_Rect rect = {static_cast<int>(x - 35*scale), static_cast<int>(y -
@@ -59,10 +61,13 @@ void Duck::draw(SDL_Renderer *renderer) {
   // SDL_RenderFillRect(renderer, &rect);
 
   // 2. 身体
-  DrawUtils::fillCircle(renderer, x, curY, 20 * scale, {255, 255, 0, 255});
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x),
+                        static_cast<const int>(curY),
+                        static_cast<const int>(20 * scale), {255, 255, 0, 255});
 
   // 3. 头部
-  DrawUtils::fillCircle(renderer, headX, headY, 12 * scale, {255, 255, 0, 255});
+  DrawUtils::fillCircle(renderer, headX, headY,
+                        static_cast<const int>(12 * scale), {255, 255, 0, 255});
 
   // 4. 嘴巴 (位置随 faceDir 改变)
   SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
@@ -71,8 +76,10 @@ void Duck::draw(SDL_Renderer *renderer) {
   SDL_RenderFillRect(renderer, &beak);
 
   // 5. 眼睛
-  DrawUtils::fillCircle(renderer, headX + (4 * scale * faceDir),
-                        headY - 3 * scale, 2 * scale, {0, 0, 0, 255});
+  DrawUtils::fillCircle(renderer,
+                        static_cast<const int>(headX + (4 * scale * faceDir)),
+                        static_cast<const int>(headY - 3 * scale),
+                        static_cast<const int>(2 * scale), {0, 0, 0, 255});
 }
 
 void Duck::drawFlash(SDL_Renderer *renderer) {

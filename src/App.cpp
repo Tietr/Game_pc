@@ -3,7 +3,7 @@
 #include "MainMenuScene.h"
 
 App::App(const char *title, int width, int height)
-    : BaseApp(title, width, height), m_background(), m_ui() {
+    : BaseApp(title, width, height) {
 
   m_sceneManager = std::make_unique<SceneManager>();
   m_serialManager = std::make_unique<SerialManager>();
@@ -11,9 +11,7 @@ App::App(const char *title, int width, int height)
   m_sceneManager->RegisterScene("game", std::make_shared<GameScene>());
   m_sceneManager->RegisterScene("mainMenu", std::make_shared<MainMenuScene>());
   m_sceneManager->ChangeScene("mainMenu");
-  // // 此处鸭子为测试数据
-  // m_ducks.push_back(Duck({0,100, 200, 1.2f}));
-  // m_ducks.push_back(Duck({1,400, 250, 1.2f}));
+
 }
 App::~App() {
   m_serialManager->stop();
@@ -27,18 +25,6 @@ App::~App() {
 
 // 处理按键逻辑
 void App::onEvent(const SDL_Event &event) {
-  // // 闪烁期间忽略所有输入
-  // if (m_gameState == GameState::Flashing) {
-  //   return;
-  // }
-  // // 鼠标点击
-  // if (event.type == SDL_MOUSEBUTTONDOWN) {
-  //   std::cout << "点击了鼠标！" << std::endl;
-  //   // 触发闪烁效果
-  //   m_gameState = GameState::Flashing;
-  //   m_flashTimer = FLASH_DURATION;
-  // }
-
   m_sceneManager->HandleInput(event);
 }
 // 初始化逻辑
@@ -50,46 +36,15 @@ void App::onInit() {
 
 // 渲染逻辑
 void App::onRender(SDL_Renderer *renderer, TTF_Font *font) {
-  // // 正常渲染游戏画面
-  // m_background.Draw(renderer);
-  // for (auto &duck : m_ducks) {
-  //   duck.draw(renderer);
-  // }
-  // m_ui.draw(renderer);
-
-  // // 闪烁效果：黑色遮罩 + 鸭子高亮
-  // if (m_gameState == GameState::Flashing) {
-  //   // 绘制黑色遮罩
-  //   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-  //   SDL_RenderFillRect(renderer, nullptr);
-
-  //   // 绘制所有鸭子为白色高亮
-  //   for (auto &duck : m_ducks) {
-  //     duck.drawFlash(renderer);
-  //   }
-  // }
-
   m_sceneManager->Render(renderer, font);
   SDL_RenderPresent(renderer);
 }
 
 // 更新逻辑and动画
-void App::onUpdate(float deltaTime) { // 闪烁期间暂停游戏更新
-  // if (m_gameState == GameState::Flashing) {
-  //   m_flashTimer -= deltaTime;
-  //   if (m_flashTimer <= 0) {
-  //     m_gameState = GameState::Running;
-  //   }
-  //   return;
-  // }
-
+void App::onUpdate(float deltaTime) {
   analyzeUSBData();
   m_sceneManager->Update(deltaTime);
 
-  // m_background.Update(deltaTime);
-  // for (auto &duck : m_ducks) {
-  //   duck.updateMove(deltaTime);
-  // }
 }
 void App::analyzeUSBData() {
   auto TempData = m_serialManager->fetchNewData();
@@ -146,4 +101,21 @@ void App::analyzeUSBData() {
       m_dataBuffer[index] = newData;
     }
   }
+}
+void App::drawNotify(SDL_Renderer *renderer, TTF_Font *font,
+                     const std::string &text) {
+  // 右上角绘制连接状态
+  SDL_Color color = {255, 255, 255};
+  SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+  if (!textSurface) {
+    return;
+  }
+  SDL_Texture *textTexture =
+      SDL_CreateTextureFromSurface(renderer, textSurface);
+  if (textTexture) {
+    SDL_Rect dstRect = {500, 0, textSurface->w, textSurface->h};
+    SDL_RenderCopy(renderer, textTexture, NULL, &dstRect);
+    SDL_DestroyTexture(textTexture);
+  }
+  SDL_FreeSurface(textSurface);
 }

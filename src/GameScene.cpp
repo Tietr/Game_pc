@@ -18,15 +18,14 @@ void GameScene::Render(SDL_Renderer *render,TTF_Font* font) {
   for (auto &duck : m_ducks) {
     duck->draw(render);
   }
-  m_ui->draw(render);
-  // 闪烁屏幕
+  // m_ui->draw(render);
+
 }
 void GameScene::OnExit() {
   std::cout << "Exiting GameScene" << std::endl;
   m_gameState = GameState::None;
 }
 void GameScene::OnEnter() {
-  // m_nextSceneName = m_name;
   BaseScene::OnEnter();
   std::cout << "Entering GameScene" << std::endl;
   
@@ -50,6 +49,6 @@ void GameScene::OnInit(const std::string &name) {
   m_name = name;
   m_nextSceneName = name;
   m_background = std::make_unique<Background>();
-  m_ui = std::make_unique<UI>();
+  // m_ui = std::make_unique<UI>();
   m_gameState = GameState::Running;
 }

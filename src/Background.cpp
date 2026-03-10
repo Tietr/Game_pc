@@ -39,19 +39,32 @@ void Background::DrawGrass(SDL_Renderer *renderer) {
 }
 
 void Background::DrawCartoonSun(SDL_Renderer *renderer, float x, float y) {
-  DrawUtils::fillCircle(renderer, x, y, 60, {255, 252, 187}); // 浅黄色
-  DrawUtils::fillCircle(renderer, x, y, 54, {255, 230, 80});  // 橙色
-  DrawUtils::fillCircle(renderer, x, y, 50, {255, 190, 0});   // 棕色
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x),
+                        static_cast<const int>(y), 60,
+                        {255, 252, 187}); // 浅黄色
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x),
+                        static_cast<const int>(y), 54, {255, 230, 80}); // 橙色
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x),
+                        static_cast<const int>(y), 50, {255, 190, 0}); // 棕色
 }
 
 void Background::DrawCloud(SDL_Renderer *renderer, float x, float y,
                            float scale) {
   SDL_Color w = {255, 255, 255, 255}; // 白色
-  DrawUtils::fillCircle(renderer, x, y, 30 * scale, w);
-  DrawUtils::fillCircle(renderer, x - 35 * scale, y + 5 * scale, 20 * scale, w);
-  DrawUtils::fillCircle(renderer, x + 35 * scale, y + 5 * scale, 22 * scale, w);
-  DrawUtils::fillCircle(renderer, x + 10 * scale, y - 15 * scale, 18 * scale,
-                        w);
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x),
+                        static_cast<const int>(y),
+                        static_cast<const int>(30 * scale), w);
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x - 35 * scale),
+                        static_cast<const int>(y + 5 * scale),
+                        static_cast<const int>(20 * scale), w);
+
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x + 35 * scale),
+                        static_cast<const int>(y + 5 * scale),
+                        static_cast<const int>(22 * scale), w);
+
+  DrawUtils::fillCircle(renderer, static_cast<const int>(x + 10 * scale),
+                        static_cast<const int>(y - 15 * scale),
+                        static_cast<const int>(18 * scale), w);
 }
 
 void Background::EnableFlash() { m_flash = true; }
