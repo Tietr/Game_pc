@@ -1,10 +1,10 @@
 #pragma once
-#include "Background.h"
 #include "BaseScene.h"
-#include "Duck.h"
-// #include "UI.h"
+#include "SceneUIManager.h"
+#include "UIItem.h"
 #include <memory>
 #include <vector>
+
 class GameScene : public BaseScene {
 public:
   ~GameScene() = default;
@@ -15,11 +15,24 @@ public:
   void Render(SDL_Renderer *render, TTF_Font *font) override;
   void Update(float deltaTime) override;
 
+  // 鸭子管理函数（供后期扩展）
+  void AddDuck(int x, int y);
+  void RemoveDuck(int index);
+  void ClearAllDucks();
+
+private:
+  // 创建Anim对象的方法
+  void CreateAnimBackground();
+  void CreateAnimClouds();
+  void CreateAimDucks();
+
 private:
   enum class GameState { Flashing, Running, None };
   GameState m_gameState = GameState::None;
 
-  std::vector<std::unique_ptr<Duck>> m_ducks;
-  std::unique_ptr<Background> m_background;
-  // std::unique_ptr<UI> m_ui;
+  // 使用SceneUIManager管理所有UIItem
+  std::unique_ptr<SceneUIManager> m_uiManager;
+
+  // 存储鸭子指针，方便后期管理
+  std::vector<AimDuck *> m_duckPointers;
 };

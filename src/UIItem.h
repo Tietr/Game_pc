@@ -19,11 +19,13 @@ protected:
 class AimDuck : public BaseUIItem {
 public:
   AimDuck(const SDL_Rect &rect, float flashDuration, bool canFlash)
-      : BaseUIItem(rect, flashDuration, canFlash), m_physics() {}
+      : BaseUIItem(rect, flashDuration, canFlash),
+        m_physics(PhysicsMode::Bounce) {}
   PhyMove &GetPhysics();
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
   virtual void OnNormalUpdate(float deltaTime) override;
 
+  
 private:
   PhyMove m_physics;
 };
@@ -31,7 +33,9 @@ private:
 class AnimCloud : public BaseUIItem {
 public:
   AnimCloud(const SDL_Rect &rect, float flashDuration, bool canFlash)
-      : BaseUIItem(rect, flashDuration, canFlash) {}
+      : BaseUIItem(rect, flashDuration, canFlash),
+        m_physics(PhysicsMode::Wrap) {}
+  PhyMove &GetPhysics();
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
   virtual void OnNormalUpdate(float deltaTime) override;
 

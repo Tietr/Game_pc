@@ -43,8 +43,8 @@ public:
   // 渲染入口：模板方法模式
   void Render(SDL_Renderer *render, TTF_Font *font) {
     if (m_renderType == RenderType::Render_None)
+      
       return;
-
     if (m_renderType == RenderType::Render_Normal) {
       // 调用勾子函数，让子类决定怎么画
       OnRenderNormal(render, font);

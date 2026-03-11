@@ -1,5 +1,4 @@
 #include "SceneUIManager.h"
-#include "DrawUtils.h"
 void SceneUIManager::AddItem(std::unique_ptr<BaseUIItem> item) {
   m_items.push_back(std::move(item));
 }
@@ -35,6 +34,7 @@ void SceneUIManager::UpdateFlashLogic(const float &deltaTime) {
       continue;
     }
     if (!m_items[i]->CanFlash()) {
+      m_items[i]->ChangeRenderType(RenderType::Render_None);
       ++m_itemIndexCanFlash;
       continue;
     }
