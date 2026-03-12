@@ -20,6 +20,9 @@ public:
   void RemoveDuck(int index);
   void ClearAllDucks();
 
+  // 获取UIManager（用于命中检测系统）
+  std::shared_ptr<SceneUIManager> GetUIManager() override;
+
 private:
   // 创建Anim对象的方法
   void CreateAnimBackground();
@@ -31,7 +34,7 @@ private:
   GameState m_gameState = GameState::None;
 
   // 使用SceneUIManager管理所有UIItem
-  std::unique_ptr<SceneUIManager> m_uiManager;
+  // std::unique_ptr<SceneUIManager> m_uiManager;
 
   // 存储鸭子指针，方便后期管理
   std::vector<AimDuck *> m_duckPointers;

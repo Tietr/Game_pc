@@ -1,7 +1,6 @@
 #pragma once
 #include "BaseScene.h"
-#include "SceneUIManager.h"
-#include <memory>
+
 
 class MainMenuScene : public BaseScene {
 public:
@@ -15,7 +14,7 @@ public:
 private:
   float m_flashingTime = 0.0f;
   float m_flashingTimeDuration = 1.0f;
-  std::shared_ptr<SceneUIManager> m_uiManager;
+  // std::shared_ptr<SceneUIManager> m_uiManager;
 
   void FlashPos(SDL_Renderer *render, SDL_Rect rect, Uint32 FlashTime) {
     SDL_SetRenderDrawColor(render, 255, 255, 255, 255);

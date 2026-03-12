@@ -26,6 +26,7 @@ public:
 
   RenderType GetRenderType() const { return m_renderType; }
   bool CanFlash() const { return m_canFlash; }
+  float GetFlashDuration() const { return m_flashDuration; }
   RenderType Update(float deltaTime) {
     if (m_renderType == RenderType::Render_Flash) {
       m_flashTimer += deltaTime;
@@ -40,10 +41,16 @@ public:
     return m_renderType;
   }
 
+  // 获取UI边界
+  const SDL_Rect &GetBounds() const { return m_rect; }
+
+  // 设置UI边界
+  void SetBounds(const SDL_Rect &newBounds) { m_rect = newBounds; }
+
   // 渲染入口：模板方法模式
   void Render(SDL_Renderer *render, TTF_Font *font) {
     if (m_renderType == RenderType::Render_None)
-      
+
       return;
     if (m_renderType == RenderType::Render_Normal) {
       // 调用勾子函数，让子类决定怎么画

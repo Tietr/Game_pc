@@ -21,6 +21,9 @@ public:
   void HandleInput(const SDL_Event &event);
   std::vector<std::string> GetAllSceneNames();
 
+  // 获取当前场景指针
+  std::shared_ptr<BaseScene> GetCurrentScene() { return m_currentScene.lock(); }
+
 private:
   std::weak_ptr<BaseScene> m_currentScene;
 
