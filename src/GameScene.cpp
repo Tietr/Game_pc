@@ -47,10 +47,8 @@ void GameScene::HandleInput(const SDL_Event &event) {
     }
     break;
   }
-
 }
 void GameScene::OnInit(const std::string &name) {
-  // 调用基类的初始化
   BaseScene::OnInit(name);
 
   std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -62,8 +60,8 @@ void GameScene::OnInit(const std::string &name) {
 void GameScene::CreateAnimBackground() {
   SDL_Rect bgRect = {0, 0, 800, 600};
   auto background = std::make_unique<AnimBackground>(bgRect, 0.0f, false);
-  AddNormalUI(std::move(background));
-  std::cout << "AnimBackground created (no flash, bottom layer)" << std::endl;
+  m_normalUIManager->AddItem(std::move(background));
+
 }
 void GameScene::CreateAnimClouds() {
   const int cloudWidth = 80;
@@ -80,18 +78,15 @@ void GameScene::CreateAnimClouds() {
     cloud->GetPhysics().SetVelocity(static_cast<float>(cloudSpeeds[i].x),
                                     static_cast<float>(cloudSpeeds[i].y));
     cloud->GetPhysics().SetLimit(-20, 900, 0, 600);
-    AddNormalUI(std::move(cloud));
-    std::cout << "AnimCloud " << i + 1 << " created at (" << cloudPositions[i].x
-              << ", " << cloudPositions[i].y << ") with speed ("
-              << cloudSpeeds[i].x << ", 0)" << std::endl;
+    m_normalUIManager->AddItem(std::move(cloud));
+
   }
 }
-void GameScene::CreateAimDucks() {
+void GameScene::CreateAimDucks() { //初始化创建的鸭子
   const int duckWidth = 70;
   const int duckHeight = 70;
   std::vector<SDL_Point> duckPositions = {{200, 300}, {400, 250}, {600, 350}};
   std::vector<SDL_Point> duckSpeeds = {{120, 90}, {-100, 120}, {80, -110}};
-  m_duckPointers.clear();
 
   for (int i = 0; i < 3; i++) {
     SDL_Rect duckRect = {duckPositions[i].x, duckPositions[i].y, duckWidth,
@@ -103,14 +98,12 @@ void GameScene::CreateAimDucks() {
     duck->GetPhysics().SetVelocity(static_cast<float>(duckSpeeds[i].x),
                                    static_cast<float>(duckSpeeds[i].y));
     duck->GetPhysics().SetLimit(30, 850, 30, 450);
-    AimDuck *duckPtr = duck.get();
-    m_duckPointers.push_back(duckPtr);
+
     AddFlashUIDelayed(std::move(duck));
-    std::cout << "AimDuck " << i + 1 << " created at (" << duckPositions[i].x
-              << ", " << duckPositions[i].y << ") with speed ("
-              << duckSpeeds[i].x << ", " << duckSpeeds[i].y << ")" << std::endl;
   }
 }
+
+// 动态增加鸭子，可以再update检测到当前鸭子数量，如果小于某个值就调用这个函数增加鸭子
 void GameScene::AddDuck(int x, int y) {
   SDL_Rect duckRect = {x, y, 40, 40};
   float speedX = static_cast<float>((std::rand() % 200) - 100);
@@ -118,28 +111,7 @@ void GameScene::AddDuck(int x, int y) {
   auto duck = std::make_unique<AimDuck>(duckRect, 0.5f, true);
   duck->GetPhysics().SetVelocity(speedX, speedY);
   duck->GetPhysics().SetLimit(0, 800, 0, 600);
-  AimDuck *duckPtr = duck.get();
-  m_duckPointers.push_back(duckPtr);
   AddFlashUIDelayed(std::move(duck));
-  std::cout << "Duck added at (" << x << ", " << y << ") with speed (" << speedX
-            << ", " << speedY << ")" << std::endl;
 }
 
-void GameScene::RemoveDuck(int index) {
-  if (index >= 0 && index < static_cast<int>(m_duckPointers.size())) {
-    // 使用延迟移除功能
-    RemoveFlashUIDelayed(static_cast<size_t>(index));
-    m_duckPointers.erase(m_duckPointers.begin() + index);
-    std::cout << "Duck removal scheduled for index " << index << std::endl;
-  }
-}
 
-void GameScene::ClearAllDucks() {
-  std::cout << "Clearing all ducks (not fully implemented)" << std::endl;
-  m_duckPointers.clear();
-}
-
-std::shared_ptr<SceneUIManager> GameScene::GetUIManager() {
-  // 返回可闪烁UI管理器（用于命中检测）
-  return GetFlashUIManager();
-}

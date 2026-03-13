@@ -45,34 +45,3 @@ protected:
     }
   }
 };
-
-// 阻挡模式 (ClampMove)
-class ClampMove : public BasePhyMove {
-protected:
-  void OnHandleBoundary(float w, float h) override {
-    // 左右阻挡
-    if (m_x < m_minX) {
-      m_x = (float)m_minX;
-      m_vx = 0;
-    } else if (m_x + w > m_maxX) {
-      m_x = (float)m_maxX - w;
-      m_vx = 0;
-    }
-
-    // 上下阻挡
-    if (m_y < m_minY) {
-      m_y = (float)m_minY;
-      m_vy = 0;
-    } else if (m_y + h > m_maxY) {
-      m_y = (float)m_maxY - h;
-      m_vy = 0;
-    }
-  }
-};
-
-// 无边界模式 (NoBoundaryMove) —— 无视边界
-class NoBoundaryMove : public BasePhyMove {
-protected:
-  void OnHandleBoundary(float w, float h) override {
-  }
-};

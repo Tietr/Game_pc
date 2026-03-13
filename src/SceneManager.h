@@ -20,12 +20,26 @@ public:
   std::string GetCurrentSceneName() const;
   void HandleInput(const SDL_Event &event);
   std::vector<std::string> GetAllSceneNames();
-
-  // 获取当前场景指针
-  std::shared_ptr<BaseScene> GetCurrentScene() { return m_currentScene.lock(); }
+  void AddFlashUIToCurrentScene(std::unique_ptr<BaseUIItem> item);
+  void RemoveFlashUIFromCurrentScene(size_t index);
+  int GetCurrentFlashingUIIndex() const;
+  inline std::shared_ptr<BaseScene> GetCurrentScene() const {
+    return m_currentScene;
+  }
+  void EnableFlashForCurrentScene() {
+    if (m_currentScene) {
+      m_currentScene->EnableFlash();
+    }
+  }
+  void ResetFlashStateForCurrentScene() {
+    if (m_currentScene) {
+      m_currentScene->DisableFlash();
+    }
+  }
 
 private:
-  std::weak_ptr<BaseScene> m_currentScene;
-
+  std::shared_ptr<BaseScene> m_currentScene;
   std::unordered_map<std::string, std::shared_ptr<BaseScene>> m_scenes;
 };
+
+// 这个scenemanager应该管理所有场景的切换和更新（渲染模式转换）等

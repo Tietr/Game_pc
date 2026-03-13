@@ -7,8 +7,6 @@
 enum class PhysicsMode {
   Bounce,    // 反弹模式
   Wrap,      // 穿梭模式
-  Clamp,     // 阻挡模式
-  NoBoundary // 无边界模式
 };
 
 // PhyMove 现在作为一个兼容性包装类，默认使用反弹模式
@@ -26,12 +24,6 @@ public:
       break;
     case PhysicsMode::Wrap:
       m_physics = std::make_unique<WrapMove>();
-      break;
-    case PhysicsMode::Clamp:
-      m_physics = std::make_unique<ClampMove>();
-      break;
-    case PhysicsMode::NoBoundary:
-      m_physics = std::make_unique<NoBoundaryMove>();
       break;
     }
     m_physics->SetPosition(400, 300);
@@ -61,11 +53,6 @@ public:
 
   void ChangeToWrapMode() { ChangePhysicsMode<WrapMove>(); }
 
-  void ChangeToClampMode() { ChangePhysicsMode<ClampMove>(); }
-
-  void ChangeToNoBoundaryMode() { ChangePhysicsMode<NoBoundaryMove>(); }
-
-  // 获取底层物理对象（高级用法）
   BasePhyMove *GetPhysics() { return m_physics.get(); }
 
 private:
@@ -78,10 +65,6 @@ private:
     auto newPhysics = std::make_unique<T>();
     newPhysics->SetPosition(x, y);
     newPhysics->SetVelocity(vx, vy);
-
-    // 复制边界限制
-    // 注意：这里需要访问基类的保护成员，所以我们需要一个方法来获取和设置边界
-    // 暂时保持简单实现
     m_physics = std::move(newPhysics);
   }
 
