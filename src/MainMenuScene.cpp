@@ -1,4 +1,5 @@
 #include "MainMenuScene.h"
+#include "EventBus.h"
 #include "UIItem.h"
 #include <iostream>
 
@@ -10,12 +11,19 @@ void MainMenuScene::OnInit(const std::string &name) {
   SDL_Colour button_QUIT_Color = {255, 0, 0};
   float flashDuration = 1.0f;
   bool canFlash = true;
-// TODO：对于被删除的UI项目，需要触发亡语
-// 主菜单场景使用了AddFlashUIDelayed方法来添加UI项，说明该函数确实可用
+  // TODO：对于被删除的UI项目，需要触发亡语
+  // 主菜单场景使用了AddFlashUIDelayed方法来添加UI项，说明该函数确实可用
   AddFlashUIDelayed(std::make_unique<ButtonWithText>(
-      button_RUN_Rect, flashDuration, canFlash, "RUN", button_RUN_Color));
+      button_RUN_Rect, flashDuration, canFlash, "RUN", button_RUN_Color, [&]() {
+        std::cout << "RUN button removed!" << std::endl;
+        m_nextSceneName = "game";
+      }));
   AddFlashUIDelayed(std::make_unique<ButtonWithText>(
-      button_QUIT_Rect, flashDuration, canFlash, "QUIT", button_QUIT_Color));
+      button_QUIT_Rect, flashDuration, canFlash, "QUIT", button_QUIT_Color,
+      [&]() {
+        std::cout << "QUIT button removed!" << std::endl;
+        m_nextSceneName = "quit";
+      }));
 }
 void MainMenuScene::HandleInput(const SDL_Event &event) {
   switch (event.type) {
@@ -50,6 +58,4 @@ void MainMenuScene::Render(SDL_Renderer *render, TTF_Font *font) {
   SDL_RenderClear(render);
   RenderUIManagers(render, font);
 }
-void MainMenuScene::Update(float deltaTime) {
-  BaseScene::Update(deltaTime);
-}
+void MainMenuScene::Update(float deltaTime) { BaseScene::Update(deltaTime); }

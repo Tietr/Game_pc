@@ -63,7 +63,7 @@ void App::StateMachineUpdate(float deltaTime) {
 }
 
 void App::handleHardwareMessage(const std::string &message) {
-  if (message.find("RESET") != std::string::npos) {
+  if (message.find("FIRE") != std::string::npos) {
     if (m_hitState == HitDetectionState::Idle) {
       m_hitState = HitDetectionState::FirePrepare;
       m_hitStateTimer = 0.0f;
@@ -106,7 +106,6 @@ void App::processHit() {
     return;
   }
   std::cout << "命中! 目标索引: " << hitIndex << std::endl;
-  // TODO：调用Scene的延迟移除方法，确保在当前更新循环结束后才移除UI项，但是此处ai文件极其混乱
   m_sceneManager->RemoveFlashUIFromCurrentScene(static_cast<size_t>(hitIndex));
   stopFlashing();
   return;

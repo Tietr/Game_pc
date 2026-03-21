@@ -94,7 +94,9 @@ bool SceneUIManager::removeItem(size_t index) {
   if (index >= m_items.size()) {
     return false;
   }
+  m_items[index]->OnDead();
   m_items.erase(m_items.begin() + index);
+
   if (index <= m_itemIndexCanFlash && m_itemIndexCanFlash > 0) {
     --m_itemIndexCanFlash;
   }

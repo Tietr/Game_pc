@@ -20,8 +20,25 @@ void GameScene::Update(float deltaTime) {
     if (flashUIManager) {
       flashUIManager->EnableFlash();
     }
-
     m_gameState = GameState::Running;
+  }
+
+  if (m_gameState == GameState::Running) {
+    if (m_flashUIManager->getFlashableCount() == 0) {
+      for (int i = 0; i < 3; ++i) {
+
+        int x = std::rand() % 760 + 20; // 随机X坐标，确保鸭子不会出现在边界之外
+        int y = std::rand() % 560 + 20; // 随机Y坐标，确保鸭子不会出现在边界之外
+        AddDuck(x, y);
+      }
+      // AddDuck(600, 50); //
+      // 如果当前没有可闪烁的UI项，说明所有鸭子都被击中，可以在这里添加新的鸭子
+
+      // 如果当前没有可闪烁的UI项，说明所有鸭子都被击中，可以在这里添加新的鸭子
+      // 例如：AddDuck(随机X坐标, 随机Y坐标);
+    }
+    // 运行状态处理，例如根据游戏逻辑动态添加鸭子
+    // 这里可以根据实际需求添加条件来调用AddDuck方法
   }
 }
 void GameScene::Render(SDL_Renderer *render, TTF_Font *font) {
@@ -61,7 +78,6 @@ void GameScene::CreateAnimBackground() {
   SDL_Rect bgRect = {0, 0, 800, 600};
   auto background = std::make_unique<AnimBackground>(bgRect, 0.0f, false);
   m_normalUIManager->AddItem(std::move(background));
-
 }
 void GameScene::CreateAnimClouds() {
   const int cloudWidth = 80;
@@ -79,10 +95,9 @@ void GameScene::CreateAnimClouds() {
                                     static_cast<float>(cloudSpeeds[i].y));
     cloud->GetPhysics().SetLimit(-20, 900, 0, 600);
     m_normalUIManager->AddItem(std::move(cloud));
-
   }
 }
-void GameScene::CreateAimDucks() { //初始化创建的鸭子
+void GameScene::CreateAimDucks() { // 初始化创建的鸭子
   const int duckWidth = 70;
   const int duckHeight = 70;
   std::vector<SDL_Point> duckPositions = {{200, 300}, {400, 250}, {600, 350}};
@@ -113,5 +128,3 @@ void GameScene::AddDuck(int x, int y) {
   duck->GetPhysics().SetLimit(0, 800, 0, 600);
   AddFlashUIDelayed(std::move(duck));
 }
-
-

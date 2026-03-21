@@ -61,6 +61,8 @@ public:
     }
   }
 
+  virtual void OnDead() {}
+
 protected:
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) = 0;
   virtual void OnNormalUpdate(float deltaTime) {

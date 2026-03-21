@@ -4,8 +4,9 @@
 
 ButtonWithText::ButtonWithText(const SDL_Rect &rect, float flashDuration,
                                bool canFlash, const std::string &text,
-                               SDL_Color color)
-    : BaseUIItem(rect, flashDuration, canFlash), m_text(text), m_color(color) {}
+                               SDL_Color color, std::function<void()> deadCall)
+    : BaseUIItem(rect, flashDuration, canFlash), m_text(text), m_color(color),
+      m_deadCall(deadCall) {}
 
 PhyMove &AimDuck::GetPhysics() { return m_physics; }
 

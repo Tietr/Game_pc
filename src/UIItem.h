@@ -1,16 +1,20 @@
 #pragma once
 #include "BaseUIItem.h"
 #include "PhyMove.h"
+#include <functional>
 #include <string>
 
 class ButtonWithText : public BaseUIItem {
 public:
   ButtonWithText(const SDL_Rect &rect, float flashDuration, bool canFlash,
-                 const std::string &text, SDL_Color color);
+                 const std::string &text, SDL_Color color,
+                 std::function<void()> deadCall = nullptr);
+  virtual void OnDead() override { m_deadCall(); }
 
 private:
   std::string m_text;
   SDL_Color m_color;
+  std::function<void()> m_deadCall;
 
 protected:
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
@@ -25,7 +29,6 @@ public:
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
   virtual void OnNormalUpdate(float deltaTime) override;
 
-  
 private:
   PhyMove m_physics;
 };
