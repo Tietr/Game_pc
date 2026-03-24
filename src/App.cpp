@@ -2,8 +2,11 @@
 #include "GameScene.h"
 #include "MainMenuScene.h"
 
+#include <algorithm>
 #include <charconv>
+#include <cmath>
 #include <iostream>
+#include <vector>
 
 App::App(const char *title, int width, int height)
     : BaseApp(title, width, height) {
@@ -51,7 +54,10 @@ void App::StateMachineUpdate(float deltaTime) {
   case HitDetectionState::Idle:
     break;
   case HitDetectionState::FirePrepare:
-    startFlashing();
+    // 等待足够样本再切换
+    if (m_prepareSampleCount >= MIN_PREPARE_SAMPLES) {
+      startFlashing();
+    }
     break;
   case HitDetectionState::Fire:
     if (m_hitStateTimer >= 2.0f) {
@@ -64,27 +70,51 @@ void App::StateMachineUpdate(float deltaTime) {
 void App::handleHardwareMessage(const std::string &message) {
   if (message.find("FIRE") != std::string::npos) {
     if (m_hitState == HitDetectionState::Idle) {
-      m_hitState = HitDetectionState::FirePrepare;
-      m_hitStateTimer = 0.0f;
-      m_brightnessHistory.clear();
-      std::cout << "收到FIRE信号，进入FirePrepare状态" << std::endl;
+      // 只有在有有效基准线时才进入FirePrepare状态
+      if (m_hasValidBaseline) {
+        m_hitState = HitDetectionState::FirePrepare;
+        m_hitStateTimer = 0.0f;
+        m_prepareSampleCount = 0;
+        std::cout << "收到FIRE信号，进入FirePrepare状态" << std::endl;
+        std::cout << "当前基准线: " << m_currentBaseline << std::endl;
+      } else {
+        std::cout << "收到FIRE信号，但无有效基准线，忽略" << std::endl;
+      }
     }
     return;
   }
+
   if (message.find("Value:") == std::string::npos) {
     return;
   }
+
   int brightness = extractBrightness(message);
   std::cout << "当前亮度值: " << brightness << std::endl;
-  if (m_hitState != HitDetectionState::Fire) {
-    updateBaseline(brightness);
+
+  // Idle状态：直接记录为基准线
+  if (m_hitState == HitDetectionState::Idle) {
+    m_lastIdleBrightness = brightness;
+    m_currentBaseline = brightness;
+    m_hasValidBaseline = true;
+    std::cout << "Idle状态更新基准线: " << m_currentBaseline << std::endl;
   }
 
+  // FirePrepare状态：等待，不更新基准线
+  if (m_hitState == HitDetectionState::FirePrepare) {
+    m_prepareSampleCount++;
+    std::cout << "准备中: " << m_prepareSampleCount << "/"
+              << MIN_PREPARE_SAMPLES << ", 基准线保持: " << m_currentBaseline
+              << std::endl;
+  }
 
-
-
+  // Fire状态：使用Idle状态的基准线检测命中
   if (m_hitState == HitDetectionState::Fire) {
     int delta = brightness - m_currentBaseline;
+    std::cout << "Fire状态检测 - 亮度: " << brightness
+              << ", 基准线: " << m_currentBaseline << ", Delta: " << delta
+              << ", 阈值: " << m_hitThreshold << std::endl;
+
+    // 简单阈值检测
     if (delta > m_hitThreshold) {
       processHit();
     }
@@ -101,6 +131,7 @@ void App::stopFlashing() {
   m_sceneManager->ResetFlashStateForCurrentScene();
   m_hitState = HitDetectionState::Idle;
   m_hitStateTimer = 0.0f;
+  m_prepareSampleCount = 0; // 重置准备计数
 }
 
 void App::processHit() {
@@ -119,15 +150,10 @@ void App::processHit() {
 }
 
 void App::updateBaseline(int brightness) {
-  m_brightnessHistory.push_back(brightness);
-  if (m_brightnessHistory.size() > BASELINE_WINDOW) {
-    m_brightnessHistory.pop_front();
-  }
-  int sum = 0;
-  for (int val : m_brightnessHistory) {
-    sum += val;
-  }
-  m_currentBaseline = sum / static_cast<int>(m_brightnessHistory.size());
+  // 简单策略：直接使用传入的亮度值作为基准线
+  m_currentBaseline = brightness;
+  m_hasValidBaseline = true;
+  std::cout << "更新基准线: " << m_currentBaseline << std::endl;
 }
 
 int App::extractBrightness(const std::string &data) {
@@ -144,4 +170,3 @@ int App::extractBrightness(const std::string &data) {
   }
   return 0;
 }
-

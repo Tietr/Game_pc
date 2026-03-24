@@ -31,9 +31,13 @@ private:
   int m_currentFlashingIndex = -1; // 当前闪烁的UI索引
 
   // 亮度基准管理
-  std::deque<int> m_brightnessHistory;
   int m_currentBaseline = 0;
-  static const size_t BASELINE_WINDOW = 50;
+  int m_lastIdleBrightness = 0;    // 上一次Idle状态的亮度值
+  bool m_hasValidBaseline = false; // 是否有有效的基准线
+
+  // 准备阶段样本计数
+  size_t m_prepareSampleCount = 0;
+  static const size_t MIN_PREPARE_SAMPLES = 2; // 2 * 200ms = 400ms准备时间
 
   // 命中检测方法
   void StateMachineUpdate(float deltaTime);
