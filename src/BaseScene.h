@@ -17,10 +17,8 @@ public:
   virtual void OnInit(const std::string &name) {
     m_name = name;
     m_nextSceneName = name;
-    // normalUIManager使用NormalMode（可以手动设置渲染模式）
     m_normalUIManager = std::make_shared<SceneUIManager>(
         SceneUIManager::UIManagerMode::NormalMode);
-    // flashUIManager使用FlashMode（自动闪烁逻辑）
     m_flashUIManager = std::make_shared<SceneUIManager>(
         SceneUIManager::UIManagerMode::FlashMode);
   };

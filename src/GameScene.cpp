@@ -26,19 +26,13 @@ void GameScene::Update(float deltaTime) {
   if (m_gameState == GameState::Running) {
     if (m_flashUIManager->getFlashableCount() == 0) {
       for (int i = 0; i < 3; ++i) {
-
-        int x = std::rand() % 760 + 20; // 随机X坐标，确保鸭子不会出现在边界之外
-        int y = std::rand() % 560 + 20; // 随机Y坐标，确保鸭子不会出现在边界之外
+        int x = std::rand() % 801;
+        int y = std::rand() % 601;
+        std::cout << "Adding new duck at (" << x << ", " << y << ")"
+                  << std::endl;
         AddDuck(x, y);
       }
-      // AddDuck(600, 50); //
-      // 如果当前没有可闪烁的UI项，说明所有鸭子都被击中，可以在这里添加新的鸭子
-
-      // 如果当前没有可闪烁的UI项，说明所有鸭子都被击中，可以在这里添加新的鸭子
-      // 例如：AddDuck(随机X坐标, 随机Y坐标);
     }
-    // 运行状态处理，例如根据游戏逻辑动态添加鸭子
-    // 这里可以根据实际需求添加条件来调用AddDuck方法
   }
 }
 void GameScene::Render(SDL_Renderer *render, TTF_Font *font) {
@@ -47,10 +41,12 @@ void GameScene::Render(SDL_Renderer *render, TTF_Font *font) {
 }
 void GameScene::OnExit() {
   std::cout << "Exiting GameScene" << std::endl;
+  Score = 0;
   m_gameState = GameState::None;
 }
 void GameScene::OnEnter() {
   BaseScene::OnEnter();
+  Score = 0;
   std::cout << "Entering GameScene" << std::endl;
 }
 void GameScene::HandleInput(const SDL_Event &event) {
@@ -107,7 +103,11 @@ void GameScene::CreateAimDucks() { // 初始化创建的鸭子
     SDL_Rect duckRect = {duckPositions[i].x, duckPositions[i].y, duckWidth,
                          duckHeight};
 
-    auto duck = std::make_unique<AimDuck>(duckRect, 0.5f, true);
+    auto duck =
+        std::make_unique<AimDuck>(duckRect, DuckFloatTimer, true, [this]() {
+          Score += 1; // 每次命中增加1分
+          std::cout << "Score: " << Score << std::endl;
+        });
     duck->GetPhysics().SetPosition(static_cast<float>(duckPositions[i].x),
                                    static_cast<float>(duckPositions[i].y));
     duck->GetPhysics().SetVelocity(static_cast<float>(duckSpeeds[i].x),
@@ -123,7 +123,12 @@ void GameScene::AddDuck(int x, int y) {
   SDL_Rect duckRect = {x, y, 40, 40};
   float speedX = static_cast<float>((std::rand() % 200) - 100);
   float speedY = static_cast<float>((std::rand() % 200) - 100);
-  auto duck = std::make_unique<AimDuck>(duckRect, 0.5f, true);
+
+  auto duck =
+      std::make_unique<AimDuck>(duckRect, DuckFloatTimer, true, [this]() {
+        Score += 1; // 每次命中增加10分
+        std::cout << "Score: " << Score << std::endl;
+      });
   duck->GetPhysics().SetVelocity(speedX, speedY);
   duck->GetPhysics().SetLimit(0, 800, 0, 600);
   AddFlashUIDelayed(std::move(duck));

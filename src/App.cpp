@@ -7,7 +7,6 @@
 
 App::App(const char *title, int width, int height)
     : BaseApp(title, width, height) {
-
   m_sceneManager = std::make_unique<SceneManager>();
   m_serialManager = std::make_unique<SerialManager>();
 
@@ -67,6 +66,7 @@ void App::handleHardwareMessage(const std::string &message) {
     if (m_hitState == HitDetectionState::Idle) {
       m_hitState = HitDetectionState::FirePrepare;
       m_hitStateTimer = 0.0f;
+      m_brightnessHistory.clear();
       std::cout << "收到FIRE信号，进入FirePrepare状态" << std::endl;
     }
     return;
@@ -75,7 +75,14 @@ void App::handleHardwareMessage(const std::string &message) {
     return;
   }
   int brightness = extractBrightness(message);
-  updateBaseline(brightness);
+  std::cout << "当前亮度值: " << brightness << std::endl;
+  if (m_hitState != HitDetectionState::Fire) {
+    updateBaseline(brightness);
+  }
+
+
+
+
   if (m_hitState == HitDetectionState::Fire) {
     int delta = brightness - m_currentBaseline;
     if (delta > m_hitThreshold) {
@@ -137,8 +144,4 @@ int App::extractBrightness(const std::string &data) {
   }
   return 0;
 }
-// 同样的问题，这个函数应该放在SceneManager里，App不应该直接操作Scene的UI细节
-std::shared_ptr<SceneUIManager> App::getCurrentSceneUIFlashManager() {
-  auto currentScene = m_sceneManager->GetCurrentScene();
-  return currentScene ? currentScene->GetFlashUIManager() : nullptr;
-}
+

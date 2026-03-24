@@ -30,6 +30,11 @@ target("sdl2_test_project")
             add_cxflags("/Zi")
             add_ldflags("/DEBUG")
         end
+    elseif is_os("linux") then
+        add_ldflags("-lpthread", "-lrt")
+        if is_mode("debug") then
+            add_cxflags("-g", "-O0")
+        end
     end
     after_build(function (target)
         cpResToDir = target:targetdir() .. "/res"
@@ -40,5 +45,5 @@ target("sdl2_test_project")
         end
         msg = "Building finished, cp res files to " .. cpResToDir
         print(msg)
-    end )
+    end)
 

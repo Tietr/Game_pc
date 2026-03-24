@@ -16,7 +16,6 @@ void AimDuck::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
 
   int headX = static_cast<int>(m_physics.GetX() + (18 * faceDir));
   int headY = static_cast<int>(curY - 15);
-
   // 2. 身体
   DrawUtils::fillCircle(render, static_cast<const int>(m_physics.GetX()),
                         static_cast<const int>(curY),
@@ -36,6 +35,8 @@ void AimDuck::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   DrawUtils::fillCircle(render, static_cast<const int>(headX + (4 * faceDir)),
                         static_cast<const int>(headY - 3),
                         static_cast<const int>(2), {0, 0, 0, 255});
+
+
 }
 
 void AimDuck::OnNormalUpdate(float deltaTime) {
@@ -49,7 +50,6 @@ void ButtonWithText::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   DrawUtils::FillRectWithText(render, font, m_rect, m_color, m_text.c_str());
 }
 
-// AnimCloud 实现
 void AnimCloud::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   SDL_Color w = {255, 255, 255, 255}; // 白色
   DrawUtils::fillCircle(render, static_cast<const int>(m_rect.x),
@@ -74,7 +74,6 @@ void AnimCloud::OnNormalUpdate(float deltaTime) {
             static_cast<int>(m_physics.GetY()), m_rect.w, m_rect.h};
 }
 
-// AnimBackground 实现
 void AnimBackground::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   // sky
   SDL_SetRenderDrawColor(render, 135, 206, 235, 255); // 蓝色
@@ -83,7 +82,6 @@ void AnimBackground::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   SDL_SetRenderDrawColor(render, 34, 139, 34, 255); // 草绿色
   SDL_Rect grassRect = {0, 400, 800, 200};
   SDL_RenderFillRect(render, &grassRect);
-  // CartoonSun
   int x = 650;
   int y = 100;
   DrawUtils::fillCircle(render, x, y, 60, {255, 252, 187}); // 浅黄色
@@ -92,7 +90,13 @@ void AnimBackground::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
 }
 
 void AnimBackground::OnNormalUpdate(float deltaTime) {
-  // AnimBackground 不需要物理更新，可以留空或添加其他动画逻辑
-  // 例如：可以添加颜色渐变、透明度变化等非物理动画
+
 }
 PhyMove &AnimCloud::GetPhysics() { return m_physics; }
+void AimDuck::OnDead() { m_deadCall(); }
+AimDuck::AimDuck(const SDL_Rect &rect, float flashDuration, bool canFlash,
+                 std::function<void()> deadCall)
+    : BaseUIItem(rect, flashDuration, canFlash), m_physics(PhysicsMode::Bounce),
+      m_deadCall(deadCall) {}
+AnimCloud::AnimCloud(const SDL_Rect &rect, float flashDuration, bool canFlash)
+    : BaseUIItem(rect, flashDuration, canFlash), m_physics(PhysicsMode::Wrap) {}

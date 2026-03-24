@@ -18,17 +18,14 @@ public:
   void RemoveDuck(int index);
   void ClearAllDucks();
 
-
 private:
   void CreateAnimBackground();
   void CreateAnimClouds();
   void CreateAimDucks();
+  int32_t Score = 0;
 
 private:
   enum class GameState { Flashing, Running, None };
   GameState m_gameState = GameState::None;
-
-
-  // // 存储鸭子指针，方便后期管理
-  // std::vector<AimDuck *> m_duckPointers;
+  float DuckFloatTimer = 0.2f;
 };

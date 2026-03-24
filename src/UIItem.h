@@ -22,22 +22,26 @@ protected:
 
 class AimDuck : public BaseUIItem {
 public:
-  AimDuck(const SDL_Rect &rect, float flashDuration, bool canFlash)
-      : BaseUIItem(rect, flashDuration, canFlash),
-        m_physics(PhysicsMode::Bounce) {}
+  AimDuck(const SDL_Rect &rect, float flashDuration, bool canFlash,
+          std::function<void()> deadCall = nullptr);
   PhyMove &GetPhysics();
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
   virtual void OnNormalUpdate(float deltaTime) override;
+  virtual void OnDead() override;
+  virtual void OnRenderFlash(SDL_Renderer *render) override {
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Rect pos = {m_rect.x , m_rect.y , m_rect.h, m_rect.w};
+    DrawUtils::FillRext(render, pos, white);
+  }
 
 private:
   PhyMove m_physics;
+  std::function<void()> m_deadCall;
 };
 
 class AnimCloud : public BaseUIItem {
 public:
-  AnimCloud(const SDL_Rect &rect, float flashDuration, bool canFlash)
-      : BaseUIItem(rect, flashDuration, canFlash),
-        m_physics(PhysicsMode::Wrap) {}
+  AnimCloud(const SDL_Rect &rect, float flashDuration, bool canFlash);
   PhyMove &GetPhysics();
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
   virtual void OnNormalUpdate(float deltaTime) override;

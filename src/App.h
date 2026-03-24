@@ -39,11 +39,10 @@ private:
   void StateMachineUpdate(float deltaTime);
   void handleHardwareMessage(const std::string &message);
   void startFlashing();
-  void stopFlashing(); // 作用存疑
+  void stopFlashing();
   void processHit();
   void updateBaseline(int brightness);
   int extractBrightness(const std::string &data);
   // 获取当前场景的UIManager
   std::unique_ptr<SceneManager> m_sceneManager;
-  std::shared_ptr<SceneUIManager> getCurrentSceneUIFlashManager();
 };

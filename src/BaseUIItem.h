@@ -41,10 +41,7 @@ public:
     return m_renderType;
   }
 
-  // 获取UI边界
   const SDL_Rect &GetBounds() const { return m_rect; }
-
-  // 设置UI边界
   void SetBounds(const SDL_Rect &newBounds) { m_rect = newBounds; }
 
   // 渲染入口：模板方法模式
@@ -53,10 +50,8 @@ public:
 
       return;
     if (m_renderType == RenderType::Render_Normal) {
-      // 调用勾子函数，让子类决定怎么画
       OnRenderNormal(render, font);
     } else if (m_renderType == RenderType::Render_Flash) {
-      // 闪烁效果通常是通用的（白色填充），也可以设为虚函数
       OnRenderFlash(render);
     }
   }
