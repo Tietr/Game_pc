@@ -37,6 +37,14 @@ public:
     }
   }
 
+  bool IsCurrentSceneFlashing() const {
+    if (m_currentScene) {
+      return m_currentScene->IsFlashing();
+    }
+    return false;
+  }
+
+
 private:
   std::shared_ptr<BaseScene> m_currentScene;
   std::unordered_map<std::string, std::shared_ptr<BaseScene>> m_scenes;

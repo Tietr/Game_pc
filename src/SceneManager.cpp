@@ -4,7 +4,9 @@
 void SceneManager::RegisterScene(const std::string &name,
                                  std::shared_ptr<BaseScene> scene) {
   if (m_scenes.find(name) != m_scenes.end()) {
+#ifndef NDEBUG
     std::cout << "Scene " << name << " already exists" << std::endl;
+#endif
     return;
   }
   scene->OnInit(name);
@@ -34,7 +36,9 @@ void SceneManager::Render(SDL_Renderer *render, TTF_Font *font) {
 bool SceneManager::ChangeScene(const std::string &name) {
   auto newScene = m_scenes.find(name);
   if (newScene == m_scenes.end()) {
+#ifndef NDEBUG
     std::cout << "Scene " << name << " not found" << std::endl;
+#endif
     return false;
   }
   std::shared_ptr<BaseScene> newScenePtr = newScene->second;
@@ -42,7 +46,9 @@ bool SceneManager::ChangeScene(const std::string &name) {
     return true;
   }
   if (!newScenePtr) {
+#ifndef NDEBUG
     std::cout << "Scene " << name << " is null" << std::endl;
+#endif
     return false;
   }
   if (m_currentScene) {

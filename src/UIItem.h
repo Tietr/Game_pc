@@ -28,11 +28,7 @@ public:
   virtual void OnRenderNormal(SDL_Renderer *render, TTF_Font *font) override;
   virtual void OnNormalUpdate(float deltaTime) override;
   virtual void OnDead() override;
-  virtual void OnRenderFlash(SDL_Renderer *render) override {
-    SDL_Color white = {255, 255, 255, 255};
-    SDL_Rect pos = {m_rect.x , m_rect.y , m_rect.h, m_rect.w};
-    DrawUtils::FillRext(render, pos, white);
-  }
+  virtual void OnRenderFlash(SDL_Renderer *render) override;
 
 private:
   PhyMove m_physics;

@@ -6,6 +6,12 @@
 #include <SDL.h>
 #include <iostream>
 
+#ifdef ENABLE_GUI
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdlrenderer2.h"
+#include "implot.h"
+#endif
 
 class BaseApp {
 public:
@@ -28,6 +34,17 @@ public:
       std::cerr << "初始化失败" << std::endl;
       return -1;
     }
+
+#ifdef ENABLE_GUI
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImPlot::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui_ImplSDL2_InitForSDLRenderer(m_window, m_renderer);
+    ImGui_ImplSDLRenderer2_Init(m_renderer);
+#endif
+
     m_running = true;
     uint64_t m_lastTime = SDL_GetPerformanceCounter();
     uint64_t frequency = SDL_GetPerformanceFrequency();
@@ -43,6 +60,9 @@ public:
         dt = 0.25f;
       }
       while (SDL_PollEvent(&event)) {
+#ifdef ENABLE_GUI
+        ImGui_ImplSDL2_ProcessEvent(&event);
+#endif
         handleEvents(event);
         onEvent(event);
       }
@@ -57,6 +77,22 @@ public:
       SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
       SDL_RenderClear(m_renderer);
       onRender(m_renderer, m_font);
+#ifdef ENABLE_GUI
+      SDL_RenderSetLogicalSize(m_renderer, 0,
+                               0); // 临时关闭逻辑缩放，切换回物理像素坐标系
+
+      ImGui_ImplSDLRenderer2_NewFrame();
+      ImGui_ImplSDL2_NewFrame();
+      ImGui::NewFrame();
+
+      onDebugDraw();
+
+      ImGui::Render();
+      ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), m_renderer);
+
+      SDL_RenderSetLogicalSize(m_renderer, m_width,
+                               m_height); // 恢复逻辑缩放供下一帧游戏使用
+#endif
       SDL_RenderPresent(m_renderer);
     }
     return 0;
@@ -80,7 +116,7 @@ protected:
   virtual void onUpdate(float deltaTime) {}
   virtual void onRender(SDL_Renderer *renderer, TTF_Font *font) {}
   virtual void onEvent(const SDL_Event &event) {}
-
+  virtual void onDebugDraw() {}
   SDL_Renderer *getRenderer() { return m_renderer; }
   TTF_Font *getFont() { return m_font; }
 
@@ -134,11 +170,19 @@ protected:
   }
 
   void cleanup() {
+#ifdef ENABLE_GUI
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
+#endif
+    if (m_font)
+      TTF_CloseFont(m_font);
     if (m_renderer)
       SDL_DestroyRenderer(m_renderer);
     if (m_window)
       SDL_DestroyWindow(m_window);
-
+    TTF_Quit();
     SDL_Quit();
   }
 };

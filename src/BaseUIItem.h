@@ -7,31 +7,31 @@
 #include "SDL_render.h"
 #include "SDL_ttf.h"
 
-enum class RenderType { Render_None, Render_Flash, Render_Normal };
+enum class RenderState { Render_None, Render_Flash, Render_Normal };
 
 class BaseUIItem {
 public:
   BaseUIItem(const SDL_Rect &rect, float flashDuration, bool canFlash)
       : m_rect(rect), m_flashDuration(flashDuration),
-        m_renderType(RenderType::Render_Normal), m_canFlash(canFlash) {}
+        m_renderType(RenderState::Render_Normal), m_canFlash(canFlash) {}
 
   virtual ~BaseUIItem() = default;
-  void ChangeRenderType(RenderType type) {
-    if (m_renderType == RenderType::Render_Flash &&
-        type != RenderType::Render_None) {
+  void ChangeRenderType(RenderState type) {
+    if (m_renderType == RenderState::Render_Flash &&
+        type != RenderState::Render_None) {
       return;
     }
     m_renderType = type;
   }
 
-  RenderType GetRenderType() const { return m_renderType; }
+  RenderState GetRenderType() const { return m_renderType; }
   bool CanFlash() const { return m_canFlash; }
   float GetFlashDuration() const { return m_flashDuration; }
-  RenderType Update(float deltaTime) {
-    if (m_renderType == RenderType::Render_Flash) {
+  RenderState Update(float deltaTime) {
+    if (m_renderType == RenderState::Render_Flash) {
       m_flashTimer += deltaTime;
       if (m_flashTimer >= m_flashDuration) {
-        m_renderType = RenderType::Render_None;
+        m_renderType = RenderState::Render_None;
         m_flashTimer = 0.0f;
       }
     } else {
@@ -46,12 +46,12 @@ public:
 
   // 渲染入口：模板方法模式
   void Render(SDL_Renderer *render, TTF_Font *font) {
-    if (m_renderType == RenderType::Render_None)
+    if (m_renderType == RenderState::Render_None)
 
       return;
-    if (m_renderType == RenderType::Render_Normal) {
+    if (m_renderType == RenderState::Render_Normal) {
       OnRenderNormal(render, font);
-    } else if (m_renderType == RenderType::Render_Flash) {
+    } else if (m_renderType == RenderState::Render_Flash) {
       OnRenderFlash(render);
     }
   }
@@ -72,6 +72,6 @@ protected:
   SDL_Rect m_rect;
   float m_flashDuration;
   float m_flashTimer = 0.0f;
-  RenderType m_renderType;
+  RenderState m_renderType;
   bool m_canFlash;
 };

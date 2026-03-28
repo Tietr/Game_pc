@@ -1,11 +1,35 @@
 #pragma once
 #include "BaseApp.h"
 #include "SceneManager.h"
-#include "SceneUIManager.h"
 #include "SerialManager.h"
-
-#include <deque>
 #include <memory>
+
+#ifdef ENABLE_GUI
+#include "implot.h"
+#include <vector>
+
+
+// 环形缓冲区用于绘图
+struct ScrollingBuffer {
+  int MaxSize;
+  int Offset = 0;
+  std::vector<double> x, y;
+  ScrollingBuffer(int max_size = 1000) : MaxSize(max_size) {
+    x.reserve(MaxSize);
+    y.reserve(MaxSize);
+  }
+  void AddPoint(double x_val, double y_val) {
+    if (x.size() < MaxSize) {
+      x.push_back(x_val);
+      y.push_back(y_val);
+    } else {
+      x[Offset] = x_val;
+      y[Offset] = y_val;
+      Offset = (Offset + 1) % MaxSize;
+    }
+  }
+};
+#endif
 
 enum class GameState { Running, Flashing };
 enum class HitDetectionState {
@@ -22,26 +46,31 @@ public:
   virtual void onUpdate(float deltaTime) override;
   virtual void onRender(SDL_Renderer *renderer, TTF_Font *font) override;
   virtual void onEvent(const SDL_Event &event) override;
-
+  virtual void onDebugDraw() override; 
 private:
   std::unique_ptr<SerialManager> m_serialManager;
   HitDetectionState m_hitState = HitDetectionState::Idle;
-  float m_hitStateTimer = 0.0f;
-  int m_hitThreshold = 30;         // 命中阈值（亮度增加的最小值）
+#ifdef ENABLE_GUI
+  ScrollingBuffer m_plotData;       
+  std::vector<double> m_fireEvents; 
+#endif
+  bool m_showDebug = true;
+  const int m_hitThreshold = 30;         // 命中阈值
   int m_currentFlashingIndex = -1; // 当前闪烁的UI索引
 
-  // 亮度基准管理
   int m_currentBaseline = 0;
-  int m_lastIdleBrightness = 0;    // 上一次Idle状态的亮度值
-  bool m_hasValidBaseline = false; // 是否有有效的基准线
+  int m_lastIdleBrightness = 0;    
+  bool m_hasValidBaseline = false; 
 
-  // 准备阶段样本计数
+
   size_t m_prepareSampleCount = 0;
-  static const size_t MIN_PREPARE_SAMPLES = 2; // 2 * 200ms = 400ms准备时间
+  static const size_t MIN_PREPARE_SAMPLES = 2; // 2 * 50ms = 100ms
 
-  // 命中检测方法
+
   void StateMachineUpdate(float deltaTime);
   void handleHardwareMessage(const std::string &message);
+  void handleFireSignal();                    
+  void handleBrightnessValue(int brightness); 
   void startFlashing();
   void stopFlashing();
   void processHit();

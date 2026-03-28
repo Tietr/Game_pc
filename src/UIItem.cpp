@@ -35,8 +35,6 @@ void AimDuck::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   DrawUtils::fillCircle(render, static_cast<const int>(headX + (4 * faceDir)),
                         static_cast<const int>(headY - 3),
                         static_cast<const int>(2), {0, 0, 0, 255});
-
-
 }
 
 void AimDuck::OnNormalUpdate(float deltaTime) {
@@ -45,7 +43,23 @@ void AimDuck::OnNormalUpdate(float deltaTime) {
   m_rect = {static_cast<int>(m_physics.GetX() - bios),
             static_cast<int>(m_physics.GetY() - bios), m_rect.w, m_rect.h};
 }
+void AimDuck::OnRenderFlash(SDL_Renderer *render) {
+  // 使用与 OnRenderNormal 相同的坐标系统绘制闪烁方块
+  // 鸭子渲染范围：身体中心 (m_physics.GetX(), m_physics.GetY()), 半径 20
+  // 头部在身体前方 18 像素，半径 12
+  // 嘴巴在头部前方，大约再延伸 15 像素
+  // 总体需要包裹：中心 ±35 像素的正方形
 
+  int centerX = static_cast<int>(m_physics.GetX());
+  int centerY = static_cast<int>(m_physics.GetY());
+  int flashSize = 70; // 70x70 的正方形，足够包裹鸭子的所有部分
+  int flashX = centerX - flashSize / 2;
+  int flashY = centerY - flashSize / 2;
+
+  SDL_Rect flashRect = {flashX, flashY, flashSize, flashSize};
+  SDL_Color white = {255, 255, 255, 255};
+  DrawUtils::FillRext(render, flashRect, white);
+}
 void ButtonWithText::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   DrawUtils::FillRectWithText(render, font, m_rect, m_color, m_text.c_str());
 }
@@ -89,9 +103,7 @@ void AnimBackground::OnRenderNormal(SDL_Renderer *render, TTF_Font *font) {
   DrawUtils::fillCircle(render, x, y, 50, {255, 190, 0});   // 棕色
 }
 
-void AnimBackground::OnNormalUpdate(float deltaTime) {
-
-}
+void AnimBackground::OnNormalUpdate(float deltaTime) {}
 PhyMove &AnimCloud::GetPhysics() { return m_physics; }
 void AimDuck::OnDead() { m_deadCall(); }
 AimDuck::AimDuck(const SDL_Rect &rect, float flashDuration, bool canFlash,

@@ -28,8 +28,10 @@ void GameScene::Update(float deltaTime) {
       for (int i = 0; i < 3; ++i) {
         int x = std::rand() % 801;
         int y = std::rand() % 601;
-        std::cout << "Adding new duck at (" << x << ", " << y << ")"
-                  << std::endl;
+#ifndef NDEBUG
+std::cout << "Adding new duck at (" << x << ", " << y << ")"
+          << std::endl;
+#endif
         AddDuck(x, y);
       }
     }
@@ -40,14 +42,18 @@ void GameScene::Render(SDL_Renderer *render, TTF_Font *font) {
   RenderUIManagers(render, font);
 }
 void GameScene::OnExit() {
-  std::cout << "Exiting GameScene" << std::endl;
+#ifndef NDEBUG
+std::cout << "Exiting GameScene" << std::endl;
+#endif
   Score = 0;
   m_gameState = GameState::None;
 }
 void GameScene::OnEnter() {
   BaseScene::OnEnter();
   Score = 0;
-  std::cout << "Entering GameScene" << std::endl;
+#ifndef NDEBUG
+std::cout << "Entering GameScene" << std::endl;
+#endif
 }
 void GameScene::HandleInput(const SDL_Event &event) {
   switch (event.type) {
@@ -106,7 +112,9 @@ void GameScene::CreateAimDucks() { // 初始化创建的鸭子
     auto duck =
         std::make_unique<AimDuck>(duckRect, DuckFloatTimer, true, [this]() {
           Score += 1; // 每次命中增加1分
-          std::cout << "Score: " << Score << std::endl;
+#ifndef NDEBUG
+std::cout << "Score: " << Score << std::endl;
+#endif
         });
     duck->GetPhysics().SetPosition(static_cast<float>(duckPositions[i].x),
                                    static_cast<float>(duckPositions[i].y));
@@ -126,8 +134,10 @@ void GameScene::AddDuck(int x, int y) {
 
   auto duck =
       std::make_unique<AimDuck>(duckRect, DuckFloatTimer, true, [this]() {
-        Score += 1; // 每次命中增加10分
-        std::cout << "Score: " << Score << std::endl;
+        Score += 1; // 每次命中增加1分
+#ifndef NDEBUG
+std::cout << "Score: " << Score << std::endl;
+#endif
       });
   duck->GetPhysics().SetVelocity(speedX, speedY);
   duck->GetPhysics().SetLimit(0, 800, 0, 600);

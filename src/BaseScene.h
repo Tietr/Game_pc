@@ -30,12 +30,12 @@ public:
   virtual void Update(float deltaTime) {
 
     applyDelayedUIOperations();
-    const RenderType flashRenderType = m_flashUIManager->GetRenderType();
-    if (flashRenderType == RenderType::Render_Flash && m_normalUIManager) {
-      m_normalUIManager->SetRenderType(RenderType::Render_None);
-    } else if (flashRenderType == RenderType::Render_Normal &&
+    const RenderState flashRenderType = m_flashUIManager->GetRenderState();
+    if (flashRenderType == RenderState::Render_Flash && m_normalUIManager) {
+      m_normalUIManager->SetRenderType(RenderState::Render_None);
+    } else if (flashRenderType == RenderState::Render_Normal &&
                m_normalUIManager) {
-      m_normalUIManager->SetRenderType(RenderType::Render_Normal);
+      m_normalUIManager->SetRenderType(RenderState::Render_Normal);
     }
     m_flashUIManager->Update(deltaTime);
     m_normalUIManager->Update(deltaTime);
@@ -81,6 +81,9 @@ public:
 
   virtual void EnableFlash() { m_flashUIManager->EnableFlash(); }
   virtual void DisableFlash() { m_flashUIManager->resetFlashState(); }
+  virtual bool IsFlashing() const {
+    return m_flashUIManager->GetRenderState() == RenderState::Render_Flash;
+  }
 
 protected:
   std::string m_name = "BaseScene";
